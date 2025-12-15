@@ -25,3 +25,5 @@ env/
 
 # Jupyter
 .ipynb_checkpoints/
+# Ignore datasets
+data/datasets/
