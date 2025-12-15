@@ -1,0 +1,512 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Images - Car Damage Assessment{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900 flex items-center">
+                    <div class="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center mr-3">
+                        <i class="fas fa-camera text-white text-lg"></i>
+                    </div>
+                    Upload Damage Images
+                </h1>
+                <p class="text-gray-600 mt-2">Upload multiple images of your car from different angles for accurate damage assessment</p>
+            </div>
+            <div class="mt-4 sm:mt-0">
+                <a href="{{ url_for('damage.history') }}" class="group border border-primary-600 text-primary-600 px-6 py-3 rounded-xl font-semibold hover:bg-primary-50 transition-all duration-300 flex items-center">
+                    <i class="fas fa-history mr-2 group-hover:animate-bounce-gentle"></i>View History
+                </a>
+            </div>
+        </div>
+    
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2">
+                <!-- Upload Area -->
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                            <i class="fas fa-cloud-upload-alt text-primary-600 mr-2"></i>Upload Vehicle Images
+                        </h3>
+                    </div>
+                    <div class="p-6">
+                        <!-- Upload Form -->
+                        <form id="uploadForm" enctype="multipart/form-data">
+                            <div class="upload-area border-2 border-dashed border-gray-300 rounded-2xl p-12 text-center hover:border-primary-400 hover:bg-primary-50 transition-all duration-300 cursor-pointer" id="uploadArea">
+                                <div class="upload-content">
+                                    <div class="w-20 h-20 bg-primary-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                                        <i class="fas fa-cloud-upload-alt text-primary-600 text-3xl"></i>
+                                    </div>
+                                    <h4 class="text-xl font-semibold text-gray-900 mb-2">Drag & Drop Images Here</h4>
+                                    <p class="text-gray-600 mb-6">or click to browse files from your device</p>
+                                    <input type="file" id="imageInput" name="images" multiple accept="image/*" class="hidden">
+                                    <button type="button" class="bg-primary-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-primary-700 transition-colors inline-flex items-center" onclick="document.getElementById('imageInput').click()">
+                                        <i class="fas fa-folder-open mr-2"></i>Choose Files
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Camera Capture -->
+                            <div class="mt-6 text-center">
+                                <button type="button" class="border border-green-600 text-green-600 px-6 py-3 rounded-xl font-semibold hover:bg-green-50 transition-colors inline-flex items-center" id="cameraBtn">
+                                    <i class="fas fa-camera mr-2"></i>Take Photo
+                                </button>
+                            </div>
+                            
+                            <!-- Hidden Camera Input -->
+                            <input type="file" id="cameraInput" accept="image/*" capture="environment" class="hidden">
+                        </form>
+                    
+                        <!-- Image Preview -->
+                        <div id="imagePreview" class="mt-6 hidden">
+                            <h4 class="text-lg font-semibold text-gray-900 mb-4">Selected Images:</h4>
+                            <div id="previewContainer" class="grid grid-cols-2 md:grid-cols-3 gap-4"></div>
+                        </div>
+                        
+                        <!-- Upload Progress -->
+                        <div id="uploadProgress" class="mt-6 hidden">
+                            <div class="bg-gray-200 rounded-full h-3 overflow-hidden">
+                                <div class="bg-gradient-to-r from-primary-500 to-primary-600 h-3 rounded-full transition-all duration-300" style="width: 0%"></div>
+                            </div>
+                            <p class="text-center mt-3 text-gray-600 font-medium">Processing images...</p>
+                        </div>
+                        
+                        <!-- Upload Button -->
+                        <div class="mt-6 text-center">
+                            <button type="button" id="uploadBtn" class="bg-gradient-to-r from-primary-600 to-primary-700 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:from-primary-700 hover:to-primary-800 transition-all duration-300 transform hover:scale-105 shadow-lg inline-flex items-center hidden" onclick="uploadImages()">
+                                <i class="fas fa-upload mr-3"></i>Upload and Analyze Images
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sidebar -->
+            <div class="space-y-6">
+                <!-- Instructions -->
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                        <i class="fas fa-info-circle text-blue-500 mr-2"></i>Upload Guidelines
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="flex items-start space-x-3">
+                            <i class="fas fa-check text-green-500 mt-1"></i>
+                            <span class="text-gray-700">Upload clear, well-lit images</span>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <i class="fas fa-check text-green-500 mt-1"></i>
+                            <span class="text-gray-700">Include multiple angles of car damage</span>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <i class="fas fa-check text-green-500 mt-1"></i>
+                            <span class="text-gray-700">Supported formats: JPG, PNG, GIF, WebP</span>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <i class="fas fa-check text-green-500 mt-1"></i>
+                            <span class="text-gray-700">Maximum file size: 16MB per image</span>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <i class="fas fa-check text-green-500 mt-1"></i>
+                            <span class="text-gray-700">Upload up to 10 images</span>
+                        </div>
+                    </div>
+                </div>
+            
+                <!-- Car Types -->
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                        <i class="fas fa-car text-primary-600 mr-2"></i>Supported Car Types
+                    </h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="text-center p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
+                            <i class="fas fa-car text-primary-600 text-2xl mb-2"></i>
+                            <p class="text-sm font-medium text-gray-700">Sedans</p>
+                        </div>
+                        <div class="text-center p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
+                            <i class="fas fa-car-side text-green-600 text-2xl mb-2"></i>
+                            <p class="text-sm font-medium text-gray-700">Hatchbacks</p>
+                        </div>
+                        <div class="text-center p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
+                            <i class="fas fa-car-crash text-blue-600 text-2xl mb-2"></i>
+                            <p class="text-sm font-medium text-gray-700">Coupes</p>
+                        </div>
+                        <div class="text-center p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
+                            <i class="fas fa-car-alt text-yellow-600 text-2xl mb-2"></i>
+                            <p class="text-sm font-medium text-gray-700">Luxury Cars</p>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-500 mt-4 text-center">
+                        Our AI is specifically trained for car damage detection
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Camera Modal -->
+<div id="cameraModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+            <h3 class="text-lg font-semibold text-gray-900">Take Photo</h3>
+            <button type="button" class="text-gray-400 hover:text-gray-600" onclick="closeCameraModal()">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+        <div class="p-6 text-center">
+            <video id="cameraVideo" class="w-full h-96 object-cover rounded-xl hidden"></video>
+            <canvas id="cameraCanvas" class="w-full h-96 object-cover rounded-xl hidden"></canvas>
+            <div id="cameraPlaceholder" class="py-12">
+                <div class="w-20 h-20 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-camera text-gray-400 text-4xl"></i>
+                </div>
+                <p class="text-gray-500">Camera not available</p>
+            </div>
+        </div>
+        <div class="px-6 py-4 border-t border-gray-200 flex justify-end space-x-3">
+            <button type="button" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors" onclick="closeCameraModal()">
+                Cancel
+            </button>
+            <button type="button" class="px-4 py-2 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors hidden" id="captureBtn">
+                <i class="fas fa-camera mr-2"></i>Capture Photo
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.upload-area.dragover {
+    border-color: #3b82f6 !important;
+    background-color: #eff6ff !important;
+}
+
+.image-preview {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.image-preview img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+}
+
+.remove-image {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(239, 68, 68, 0.9);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.remove-image:hover {
+    background: rgba(220, 38, 38, 1);
+    transform: scale(1.1);
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let selectedFiles = [];
+let stream = null;
+
+document.addEventListener('DOMContentLoaded', function() {
+    const uploadArea = document.getElementById('uploadArea');
+    const imageInput = document.getElementById('imageInput');
+    const cameraBtn = document.getElementById('cameraBtn');
+    const cameraInput = document.getElementById('cameraInput');
+    const cameraModal = document.getElementById('cameraModal');
+    const captureBtn = document.getElementById('captureBtn');
+    const cameraVideo = document.getElementById('cameraVideo');
+    const cameraCanvas = document.getElementById('cameraCanvas');
+    
+    // Drag and drop functionality
+    uploadArea.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        uploadArea.classList.add('dragover');
+    });
+    
+    uploadArea.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+    });
+    
+    uploadArea.addEventListener('drop', function(e) {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+        handleFiles(e.dataTransfer.files);
+    });
+    
+    uploadArea.addEventListener('click', function() {
+        imageInput.click();
+    });
+    
+    // File input change
+    imageInput.addEventListener('change', function(e) {
+        handleFiles(e.target.files);
+    });
+    
+    // Camera input change
+    cameraInput.addEventListener('change', function(e) {
+        if (e.target.files.length > 0) {
+            handleFiles(e.target.files);
+        }
+    });
+    
+    // Camera button click
+    cameraBtn.addEventListener('click', function() {
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            cameraModal.classList.remove('hidden');
+            startCamera();
+        } else {
+            cameraInput.click();
+        }
+    });
+    
+    // Capture button click
+    captureBtn.addEventListener('click', function() {
+        capturePhoto();
+    });
+    
+    // Close camera modal function
+    window.closeCameraModal = function() {
+        cameraModal.classList.add('hidden');
+        stopCamera();
+    };
+    
+    // Camera modal events
+    cameraModal.addEventListener('click', function(e) {
+        if (e.target === cameraModal) {
+            closeCameraModal();
+        }
+    });
+});
+
+function handleFiles(files) {
+    const maxFiles = 10;
+    const maxSize = 16 * 1024 * 1024; // 16MB
+    
+    Array.from(files).forEach(file => {
+        if (selectedFiles.length >= maxFiles) {
+            showAlert('Maximum 10 images allowed', 'warning');
+            return;
+        }
+        
+        if (file.size > maxSize) {
+            showAlert(`File ${file.name} is too large. Maximum size is 16MB.`, 'warning');
+            return;
+        }
+        
+        if (file.type.startsWith('image/')) {
+            selectedFiles.push(file);
+        } else {
+            showAlert(`File ${file.name} is not an image.`, 'warning');
+        }
+    });
+    
+    updatePreview();
+}
+
+function updatePreview() {
+    const previewContainer = document.getElementById('previewContainer');
+    const imagePreview = document.getElementById('imagePreview');
+    
+    if (selectedFiles.length === 0) {
+        imagePreview.style.display = 'none';
+        return;
+    }
+    
+    imagePreview.style.display = 'block';
+    previewContainer.innerHTML = '';
+    
+    selectedFiles.forEach((file, index) => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const previewDiv = document.createElement('div');
+            previewDiv.className = 'col-md-3 col-6';
+            previewDiv.innerHTML = `
+                <div class="image-preview">
+                    <img src="${e.target.result}" alt="Preview">
+                    <button type="button" class="remove-image" onclick="removeImage(${index})">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+            previewContainer.appendChild(previewDiv);
+        };
+        reader.readAsDataURL(file);
+    });
+    
+    // Show upload button if files are selected
+    if (selectedFiles.length > 0) {
+        showUploadButton();
+    }
+}
+
+function removeImage(index) {
+    selectedFiles.splice(index, 1);
+    updatePreview();
+}
+
+function showUploadButton() {
+    const uploadBtn = document.getElementById('uploadBtn');
+    if (uploadBtn) {
+        uploadBtn.classList.remove('hidden');
+    }
+}
+
+function uploadImages() {
+    if (selectedFiles.length === 0) {
+        showAlert('Please select at least one image', 'warning');
+        return;
+    }
+    
+    const formData = new FormData();
+    selectedFiles.forEach(file => {
+        formData.append('images', file);
+    });
+    
+    // Show progress
+    const progressDiv = document.getElementById('uploadProgress');
+    progressDiv.style.display = 'block';
+    
+    // Upload images
+    fetch('{{ url_for("damage.upload_images") }}', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        progressDiv.style.display = 'none';
+        
+        if (data.success) {
+            showAlert('Images uploaded successfully!', 'success');
+            setTimeout(() => {
+                window.location.href = data.redirect;
+            }, 1000);
+        } else {
+            showAlert(data.error || 'Upload failed', 'danger');
+        }
+    })
+    .catch(error => {
+        progressDiv.style.display = 'none';
+        showAlert('Upload failed. Please try again.', 'danger');
+    });
+}
+
+function startCamera() {
+    navigator.mediaDevices.getUserMedia({ video: true })
+        .then(function(mediaStream) {
+            stream = mediaStream;
+            const cameraVideo = document.getElementById('cameraVideo');
+            const cameraPlaceholder = document.getElementById('cameraPlaceholder');
+            const captureBtn = document.getElementById('captureBtn');
+            
+            cameraVideo.srcObject = stream;
+            cameraVideo.style.display = 'block';
+            cameraPlaceholder.style.display = 'none';
+            captureBtn.style.display = 'inline-block';
+        })
+        .catch(function(error) {
+            console.error('Error accessing camera:', error);
+            showAlert('Camera access denied or not available', 'warning');
+        });
+}
+
+function stopCamera() {
+    if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+        stream = null;
+    }
+    
+    const cameraVideo = document.getElementById('cameraVideo');
+    const cameraPlaceholder = document.getElementById('cameraPlaceholder');
+    const captureBtn = document.getElementById('captureBtn');
+    
+    cameraVideo.style.display = 'none';
+    cameraPlaceholder.style.display = 'block';
+    captureBtn.style.display = 'none';
+}
+
+function capturePhoto() {
+    const cameraVideo = document.getElementById('cameraVideo');
+    const cameraCanvas = document.getElementById('cameraCanvas');
+    const ctx = cameraCanvas.getContext('2d');
+    
+    // Draw video frame to canvas
+    ctx.drawImage(cameraVideo, 0, 0, cameraCanvas.width, cameraCanvas.height);
+    
+    // Convert canvas to blob
+    cameraCanvas.toBlob(function(blob) {
+        const file = new File([blob], 'camera-capture.jpg', { type: 'image/jpeg' });
+        selectedFiles.push(file);
+        updatePreview();
+        
+        // Close modal
+        closeCameraModal();
+    }, 'image/jpeg', 0.8);
+}
+
+function showAlert(message, type) {
+    const alertDiv = document.createElement('div');
+    
+    // Map type to Tailwind classes
+    const typeClasses = {
+        'success': 'bg-green-50 border-green-200 text-green-700',
+        'error': 'bg-red-50 border-red-200 text-red-700',
+        'danger': 'bg-red-50 border-red-200 text-red-700',
+        'warning': 'bg-yellow-50 border-yellow-200 text-yellow-700',
+        'info': 'bg-blue-50 border-blue-200 text-blue-700'
+    };
+    
+    const iconClasses = {
+        'success': 'fa-check-circle text-green-400',
+        'error': 'fa-exclamation-circle text-red-400',
+        'danger': 'fa-exclamation-circle text-red-400',
+        'warning': 'fa-exclamation-triangle text-yellow-400',
+        'info': 'fa-info-circle text-blue-400'
+    };
+    
+    alertDiv.className = `mb-4 p-4 rounded-lg shadow-sm border-l-4 ${typeClasses[type] || typeClasses['info']} animate-slide-up`;
+    alertDiv.innerHTML = `
+        <div class="flex items-center justify-between">
+            <div class="flex items-center">
+                <i class="fas ${iconClasses[type] || iconClasses['info']} mr-2"></i>
+                <span class="font-medium">${message}</span>
+            </div>
+            <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-gray-400 hover:text-gray-600">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    `;
+    
+    // Insert at the top of the main container
+    const container = document.querySelector('.max-w-7xl');
+    if (container) {
+        container.insertBefore(alertDiv, container.firstChild);
+    }
+    
+    setTimeout(() => {
+        if (alertDiv.parentNode) {
+            alertDiv.remove();
+        }
+    }, 5000);
+}
+</script>
+{% endblock %}

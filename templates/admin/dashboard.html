@@ -1,0 +1,360 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Vehicle Damage Assessment System{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900 flex items-center">
+                    <div class="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center mr-3">
+                        <i class="fas fa-tachometer-alt text-white text-lg"></i>
+                    </div>
+                    Admin Dashboard
+                </h1>
+                <p class="text-gray-600 mt-2">Manage users, reports, and system settings</p>
+            </div>
+            <div class="mt-4 sm:mt-0 flex space-x-3">
+                <a href="{{ url_for('admin.users') }}" class="group border border-primary-600 text-primary-600 px-6 py-3 rounded-xl font-semibold hover:bg-primary-50 transition-all duration-300 flex items-center">
+                    <i class="fas fa-users mr-2 group-hover:animate-bounce-gentle"></i>Manage Users
+                </a>
+                <a href="{{ url_for('admin.reports') }}" class="group border border-green-600 text-green-600 px-6 py-3 rounded-xl font-semibold hover:bg-green-50 transition-all duration-300 flex items-center">
+                    <i class="fas fa-file-alt mr-2 group-hover:animate-bounce-gentle"></i>Manage Reports
+                </a>
+            </div>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Total Users Card -->
+            <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500 uppercase tracking-wide">Total Users</p>
+                        <p class="text-3xl font-bold text-gray-900 mt-2">{{ total_users }}</p>
+                    </div>
+                    <div class="w-16 h-16 bg-gradient-to-br from-primary-500 to-primary-600 rounded-2xl flex items-center justify-center">
+                        <i class="fas fa-users text-white text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Reports Card -->
+            <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500 uppercase tracking-wide">Total Reports</p>
+                        <p class="text-3xl font-bold text-gray-900 mt-2">{{ total_reports }}</p>
+                    </div>
+                    <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center">
+                        <i class="fas fa-file-alt text-white text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pending Reports Card -->
+            <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500 uppercase tracking-wide">Pending Reports</p>
+                        <p class="text-3xl font-bold text-gray-900 mt-2">{{ pending_reports }}</p>
+                    </div>
+                    <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center">
+                        <i class="fas fa-clock text-white text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Approved Reports Card -->
+            <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500 uppercase tracking-wide">Approved Reports</p>
+                        <p class="text-3xl font-bold text-gray-900 mt-2">{{ approved_reports }}</p>
+                    </div>
+                    <div class="w-16 h-16 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-2xl flex items-center justify-center">
+                        <i class="fas fa-check-circle text-white text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <!-- Vehicle Type Chart -->
+            <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                    <i class="fas fa-car text-primary-600 mr-2"></i>Vehicle Types
+                </h3>
+                <div class="h-64">
+                    <canvas id="vehicleChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Damage Type Chart -->
+            <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                    <i class="fas fa-tools text-green-600 mr-2"></i>Damage Types
+                </h3>
+                <div class="h-64">
+                    <canvas id="damageChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Reports Table -->
+        <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                    <i class="fas fa-history text-blue-600 mr-2"></i>Recent Reports
+                </h3>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vehicle</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Damage</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Severity</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for report in recent_damage_reports %}
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#{{ report.id }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ report.user.email }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ report.vehicle_type }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ report.damage_type }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                    {% if report.severity == 'Critical' %}bg-red-100 text-red-800
+                                    {% elif report.severity == 'Severe' %}bg-orange-100 text-orange-800
+                                    {% elif report.severity == 'Moderate' %}bg-yellow-100 text-yellow-800
+                                    {% else %}bg-green-100 text-green-800{% endif %}">
+                                    {{ report.severity }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                    {% if report.status == 'approved' %}bg-green-100 text-green-800
+                                    {% elif report.status == 'rejected' %}bg-red-100 text-red-800
+                                    {% elif report.status == 'in_progress' %}bg-blue-100 text-blue-800
+                                    {% else %}bg-yellow-100 text-yellow-800{% endif %}">
+                                    {{ report.status.title() }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ report.created_at.strftime('%Y-%m-%d') }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <a href="{{ url_for('damage.results', report_id=report.id) }}" class="text-primary-600 hover:text-primary-900 mr-3">View</a>
+                                {% if report.status == 'pending' %}
+                                <button onclick="approveReport({{ report.id }})" class="text-green-600 hover:text-green-900 mr-3">Approve</button>
+                                <button onclick="rejectReport({{ report.id }})" class="text-red-600 hover:text-red-900">Reject</button>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Script -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Vehicle Type Chart
+const vehicleCtx = document.getElementById('vehicleChart').getContext('2d');
+const vehicleChart = new Chart(vehicleCtx, {
+    type: 'doughnut',
+    data: {
+        labels: [
+            {% for stat in vehicle_stats %}
+            '{{ stat.vehicle_type }}',
+            {% endfor %}
+        ],
+        datasets: [{
+            data: [
+                {% for stat in vehicle_stats %}
+                {{ stat.count }},
+                {% endfor %}
+            ],
+            backgroundColor: [
+                '#4e73df',
+                '#1cc88a',
+                '#36b9cc',
+                '#f6c23e',
+                '#e74a3b',
+                '#858796'
+            ]
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false
+    }
+});
+
+// Damage Type Chart
+const damageCtx = document.getElementById('damageChart').getContext('2d');
+const damageChart = new Chart(damageCtx, {
+    type: 'bar',
+    data: {
+        labels: [
+            {% for stat in damage_stats %}
+            '{{ stat.damage_type }}',
+            {% endfor %}
+        ],
+        datasets: [{
+            label: 'Count',
+            data: [
+                {% for stat in damage_stats %}
+                {{ stat.count }},
+                {% endfor %}
+            ],
+            backgroundColor: '#4e73df'
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+
+function approveReport(reportId) {
+    if (confirm('Are you sure you want to approve this report?')) {
+        fetch(`/admin/report/${reportId}/approve`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                alert('Report approved successfully!');
+                location.reload();
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error approving report');
+        });
+    }
+}
+
+function rejectReport(reportId) {
+    if (confirm('Are you sure you want to reject this report?')) {
+        fetch(`/admin/report/${reportId}/reject`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                alert('Report rejected successfully!');
+                location.reload();
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error rejecting report');
+        });
+    }
+}
+
+// Chart.js for data visualization
+document.addEventListener('DOMContentLoaded', function() {
+    // Vehicle Types Chart
+    const vehicleCtx = document.getElementById('vehicleChart');
+    if (vehicleCtx) {
+        const vehicleData = {{ vehicle_types_data | tojson }};
+        new Chart(vehicleCtx, {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(vehicleData),
+                datasets: [{
+                    data: Object.values(vehicleData),
+                    backgroundColor: [
+                        '#3B82F6',
+                        '#10B981',
+                        '#F59E0B',
+                        '#EF4444',
+                        '#8B5CF6'
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Damage Types Chart
+    const damageCtx = document.getElementById('damageChart');
+    if (damageCtx) {
+        const damageData = {{ damage_types_data | tojson }};
+        new Chart(damageCtx, {
+            type: 'bar',
+            data: {
+                labels: Object.keys(damageData),
+                datasets: [{
+                    label: 'Count',
+                    data: Object.values(damageData),
+                    backgroundColor: '#10B981',
+                    borderColor: '#059669',
+                    borderWidth: 1,
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+    }
+});
+</script>
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}

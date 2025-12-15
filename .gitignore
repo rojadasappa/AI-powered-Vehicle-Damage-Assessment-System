@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environment variables
+.env
+
+# Database
+*.db
+
+# OS files
+.DS_Store
+
+# Virtual environment
+venv/
+env/
+
+# Logs
+*.log
+
+# Large media files
+*.mov
+
+# Jupyter
+.ipynb_checkpoints/

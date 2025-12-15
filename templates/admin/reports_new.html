@@ -1,0 +1,241 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Reports - Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900 flex items-center">
+                    <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center mr-3">
+                        <i class="fas fa-file-alt text-white text-lg"></i>
+                    </div>
+                    Manage Reports
+                </h1>
+                <p class="text-gray-600 mt-2">Review and manage all damage assessment reports</p>
+            </div>
+            <div class="mt-4 sm:mt-0 flex space-x-3">
+                <a href="{{ url_for('admin.dashboard') }}" class="group border border-gray-600 text-gray-600 px-6 py-3 rounded-xl font-semibold hover:bg-gray-50 transition-all duration-300 flex items-center">
+                    <i class="fas fa-arrow-left mr-2 group-hover:animate-bounce-gentle"></i>Back to Dashboard
+                </a>
+                <a href="{{ url_for('admin.users') }}" class="group border border-primary-600 text-primary-600 px-6 py-3 rounded-xl font-semibold hover:bg-primary-50 transition-all duration-300 flex items-center">
+                    <i class="fas fa-users mr-2 group-hover:animate-bounce-gentle"></i>Manage Users
+                </a>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-8">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                <i class="fas fa-filter text-blue-600 mr-2"></i>Filters
+            </h3>
+            <form class="grid grid-cols-1 md:grid-cols-4 gap-4" id="filterForm">
+                <div>
+                    <label for="statusFilter" class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                    <select id="statusFilter" name="status" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                        <option value="">All Statuses</option>
+                        <option value="pending">Pending</option>
+                        <option value="approved">Approved</option>
+                        <option value="rejected">Rejected</option>
+                        <option value="in_progress">In Progress</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="severityFilter" class="block text-sm font-medium text-gray-700 mb-2">Severity</label>
+                    <select id="severityFilter" name="severity" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                        <option value="">All Severities</option>
+                        <option value="Minor">Minor</option>
+                        <option value="Moderate">Moderate</option>
+                        <option value="Severe">Severe</option>
+                        <option value="Critical">Critical</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="damageFilter" class="block text-sm font-medium text-gray-700 mb-2">Damage Type</label>
+                    <select id="damageFilter" name="damage_type" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                        <option value="">All Types</option>
+                        <option value="Dent">Dent</option>
+                        <option value="Scratch">Scratch</option>
+                        <option value="Broken Part">Broken Part</option>
+                        <option value="Crack">Crack</option>
+                        <option value="Rust">Rust</option>
+                        <option value="Paint Damage">Paint Damage</option>
+                    </select>
+                </div>
+                <div class="flex items-end">
+                    <button type="submit" class="w-full bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors">
+                        <i class="fas fa-search mr-2"></i>Filter
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Reports Table -->
+        <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                    <i class="fas fa-list text-blue-600 mr-2"></i>All Reports
+                </h3>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vehicle</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Damage</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Severity</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cost</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for report in reports.items %}
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#{{ report.id }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ report.user.email }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ report.vehicle_type }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ report.damage_type }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                    {% if report.severity == 'Critical' %}bg-red-100 text-red-800
+                                    {% elif report.severity == 'Severe' %}bg-orange-100 text-orange-800
+                                    {% elif report.severity == 'Moderate' %}bg-yellow-100 text-yellow-800
+                                    {% else %}bg-green-100 text-green-800{% endif %}">
+                                    {{ report.severity }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${{ "%.2f"|format(report.estimated_cost) }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                    {% if report.status == 'approved' %}bg-green-100 text-green-800
+                                    {% elif report.status == 'rejected' %}bg-red-100 text-red-800
+                                    {% elif report.status == 'in_progress' %}bg-blue-100 text-blue-800
+                                    {% else %}bg-yellow-100 text-yellow-800{% endif %}">
+                                    {{ report.status.title() }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ report.created_at.strftime('%Y-%m-%d') }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <a href="{{ url_for('damage.results', report_id=report.id) }}" class="text-primary-600 hover:text-primary-900 mr-3">View</a>
+                                {% if report.status == 'pending' %}
+                                <button onclick="approveReport({{ report.id }})" class="text-green-600 hover:text-green-900 mr-3">Approve</button>
+                                <button onclick="rejectReport({{ report.id }})" class="text-red-600 hover:text-red-900 mr-3">Reject</button>
+                                {% endif %}
+                                <button onclick="deleteReport({{ report.id }})" class="text-red-600 hover:text-red-900">Delete</button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        {% if reports.pages > 1 %}
+        <div class="flex items-center justify-between mt-8">
+            <div class="text-sm text-gray-700">
+                Showing {{ reports.per_page * (reports.page - 1) + 1 }} to {{ reports.per_page * reports.page if reports.per_page * reports.page <= reports.total else reports.total }} of {{ reports.total }} results
+            </div>
+            <div class="flex space-x-2">
+                {% if reports.has_prev %}
+                <a href="{{ url_for('admin.reports', page=reports.prev_num) }}" class="px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">Previous</a>
+                {% endif %}
+                {% if reports.has_next %}
+                <a href="{{ url_for('admin.reports', page=reports.next_num) }}" class="px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">Next</a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function approveReport(reportId) {
+    if (confirm('Are you sure you want to approve this report?')) {
+        fetch(`/admin/report/${reportId}/approve`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                alert('Report approved successfully!');
+                location.reload();
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error approving report');
+        });
+    }
+}
+
+function rejectReport(reportId) {
+    if (confirm('Are you sure you want to reject this report?')) {
+        fetch(`/admin/report/${reportId}/reject`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                alert('Report rejected successfully!');
+                location.reload();
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error rejecting report');
+        });
+    }
+}
+
+function deleteReport(reportId) {
+    if (confirm('Are you sure you want to delete this report? This action cannot be undone.')) {
+        fetch(`/admin/report/${reportId}/delete`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                alert('Report deleted successfully!');
+                location.reload();
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error deleting report');
+        });
+    }
+}
+
+// Filter form submission
+document.getElementById('filterForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    const params = new URLSearchParams();
+    
+    for (let [key, value] of formData.entries()) {
+        if (value) {
+            params.append(key, value);
+        }
+    }
+    
+    window.location.href = `/admin/reports?${params.toString()}`;
+});
+</script>
+{% endblock %}
+

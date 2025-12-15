@@ -1,0 +1,320 @@
+{% extends "base.html" %}
+
+{% block title %}Register - Vehicle Damage Assessment System{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-lg w-full space-y-8">
+        <!-- Header -->
+        <div class="text-center">
+            <div class="mx-auto h-16 w-16 bg-gradient-to-br from-primary-500 to-primary-600 rounded-2xl flex items-center justify-center mb-6">
+                <i class="fas fa-user-plus text-2xl text-white"></i>
+            </div>
+            <h2 class="text-3xl font-bold text-gray-900 mb-2">Create Account</h2>
+            <p class="text-gray-600">Join our AI-powered damage assessment platform</p>
+        </div>
+        
+        <!-- Registration Form -->
+        <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+            <form id="registerForm" method="POST" class="space-y-6">
+                <!-- Name Fields -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="first_name" class="block text-sm font-semibold text-gray-700 mb-2">First Name</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-user text-gray-400"></i>
+                            </div>
+                            <input type="text" id="first_name" name="first_name" required 
+                                   class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                                   placeholder="First name">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label for="last_name" class="block text-sm font-semibold text-gray-700 mb-2">Last Name</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-user text-gray-400"></i>
+                            </div>
+                            <input type="text" id="last_name" name="last_name" required 
+                                   class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                                   placeholder="Last name">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Email Field -->
+                <div>
+                    <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">Email Address</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-envelope text-gray-400"></i>
+                        </div>
+                        <input type="email" id="email" name="email" required 
+                               class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                               placeholder="Enter your email">
+                    </div>
+                </div>
+                
+                <!-- Phone Field -->
+                <div>
+                    <label for="phone" class="block text-sm font-semibold text-gray-700 mb-2">Phone Number <span class="text-gray-400">(Optional)</span></label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-phone text-gray-400"></i>
+                        </div>
+                        <input type="tel" id="phone" name="phone" 
+                               class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                               placeholder="Enter your phone number">
+                    </div>
+                </div>
+                
+                <!-- Password Field -->
+                <div>
+                    <label for="password" class="block text-sm font-semibold text-gray-700 mb-2">Password</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-lock text-gray-400"></i>
+                        </div>
+                        <input type="password" id="password" name="password" required 
+                               class="block w-full pl-10 pr-12 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                               placeholder="Create a password">
+                        <button type="button" id="togglePassword" 
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <p class="mt-1 text-xs text-gray-500">Must be at least 8 characters long</p>
+                </div>
+                
+                <!-- Confirm Password Field -->
+                <div>
+                    <label for="confirm_password" class="block text-sm font-semibold text-gray-700 mb-2">Confirm Password</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-lock text-gray-400"></i>
+                        </div>
+                        <input type="password" id="confirm_password" name="confirm_password" required 
+                               class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                               placeholder="Confirm your password">
+                    </div>
+                </div>
+                
+                <!-- Terms and Conditions -->
+                <div class="flex items-start">
+                    <div class="flex items-center h-5">
+                        <input type="checkbox" id="terms" name="terms" required 
+                               class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded">
+                    </div>
+                    <div class="ml-3 text-sm">
+                        <label for="terms" class="text-gray-700">
+                            I agree to the 
+                            <a href="#" class="font-medium text-primary-600 hover:text-primary-500 transition-colors">Terms of Service</a> 
+                            and 
+                            <a href="#" class="font-medium text-primary-600 hover:text-primary-500 transition-colors">Privacy Policy</a>
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Submit Button -->
+                <div>
+                    <button type="submit" 
+                            class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-semibold rounded-xl text-white bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all duration-200 transform hover:scale-105 shadow-lg">
+                        <span class="absolute left-0 inset-y-0 flex items-center pl-3">
+                            <i class="fas fa-user-plus text-primary-200 group-hover:text-white transition-colors"></i>
+                        </span>
+                        Create Account
+                    </button>
+                </div>
+            </form>
+            
+            <!-- Sign In Link -->
+            <div class="mt-6 text-center">
+                <p class="text-sm text-gray-600">
+                    Already have an account? 
+                    <a href="{{ url_for('auth.login') }}" class="font-semibold text-primary-600 hover:text-primary-500 transition-colors">
+                        Sign in here
+                    </a>
+                </p>
+            </div>
+        </div>
+        
+        <!-- Demo Accounts -->
+        <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
+            <div class="flex items-start">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-info-circle text-blue-400"></i>
+                </div>
+                <div class="ml-3">
+                    <h3 class="text-sm font-medium text-blue-800">Already Have an Account?</h3>
+                    <div class="mt-2 text-sm text-blue-700 space-y-1">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p><strong>Demo User:</strong> demo.user@example.com</p>
+                                <p><strong>Password:</strong> password123</p>
+                            </div>
+                            <a href="{{ url_for('auth.login') }}" 
+                               class="ml-4 px-3 py-1 bg-blue-600 text-white text-xs rounded-lg hover:bg-blue-700 transition-colors">
+                                Login
+                            </a>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p><strong>Admin User:</strong> admin@admin.com</p>
+                                <p><strong>Password:</strong> password123</p>
+                            </div>
+                            <a href="{{ url_for('auth.login') }}" 
+                               class="ml-4 px-3 py-1 bg-blue-600 text-white text-xs rounded-lg hover:bg-blue-700 transition-colors">
+                                Login
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Benefits -->
+        <div class="bg-green-50 border border-green-200 rounded-xl p-4">
+            <div class="flex items-start">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-check-circle text-green-400"></i>
+                </div>
+                <div class="ml-3">
+                    <h3 class="text-sm font-medium text-green-800">Why Join Us?</h3>
+                    <div class="mt-2 text-sm text-green-700">
+                        <ul class="list-disc list-inside space-y-1">
+                            <li>Free AI-powered damage assessment</li>
+                            <li>Instant cost estimation</li>
+                            <li>Detailed PDF reports</li>
+                            <li>Secure and private</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('registerForm');
+    const togglePassword = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('password');
+    const confirmPasswordInput = document.getElementById('confirm_password');
+    
+    // Toggle password visibility
+    togglePassword.addEventListener('click', function() {
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        
+        const icon = this.querySelector('i');
+        icon.classList.toggle('fa-eye');
+        icon.classList.toggle('fa-eye-slash');
+    });
+    
+    // Password confirmation validation
+    confirmPasswordInput.addEventListener('input', function() {
+        if (this.value !== passwordInput.value) {
+            this.setCustomValidity('Passwords do not match');
+        } else {
+            this.setCustomValidity('');
+        }
+    });
+    
+    // Handle form submission
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Validate passwords match
+        if (passwordInput.value !== confirmPasswordInput.value) {
+            showAlert('Passwords do not match', 'danger');
+            return;
+        }
+        
+        // Validate password length
+        if (passwordInput.value.length < 8) {
+            showAlert('Password must be at least 8 characters long', 'danger');
+            return;
+        }
+        
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData);
+        
+        // Remove confirm_password from data
+        delete data.confirm_password;
+        
+        fetch('{{ url_for("auth.register") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                showAlert(data.error, 'danger');
+            } else {
+                showAlert(data.message, 'success');
+                setTimeout(() => {
+                    window.location.href = data.redirect;
+                }, 1000);
+            }
+        })
+        .catch(error => {
+            showAlert('An error occurred. Please try again.', 'danger');
+        });
+    });
+});
+
+
+function showAlert(message, type) {
+    const alertDiv = document.createElement('div');
+    
+    // Map type to Tailwind classes
+    const typeClasses = {
+        'success': 'bg-green-50 border-green-200 text-green-700',
+        'error': 'bg-red-50 border-red-200 text-red-700',
+        'danger': 'bg-red-50 border-red-200 text-red-700',
+        'warning': 'bg-yellow-50 border-yellow-200 text-yellow-700',
+        'info': 'bg-blue-50 border-blue-200 text-blue-700'
+    };
+    
+    const iconClasses = {
+        'success': 'fa-check-circle text-green-400',
+        'error': 'fa-exclamation-circle text-red-400',
+        'danger': 'fa-exclamation-circle text-red-400',
+        'warning': 'fa-exclamation-triangle text-yellow-400',
+        'info': 'fa-info-circle text-blue-400'
+    };
+    
+    alertDiv.className = `mb-4 p-4 rounded-lg shadow-sm border-l-4 ${typeClasses[type] || typeClasses['info']} animate-slide-up`;
+    alertDiv.innerHTML = `
+        <div class="flex items-center justify-between">
+            <div class="flex items-center">
+                <i class="fas ${iconClasses[type] || iconClasses['info']} mr-2"></i>
+                <span class="font-medium">${message}</span>
+            </div>
+            <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-gray-400 hover:text-gray-600">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    `;
+    
+    // Insert at the top of the form container
+    const formContainer = document.querySelector('.bg-white.rounded-2xl');
+    if (formContainer) {
+        formContainer.insertBefore(alertDiv, formContainer.firstChild);
+    }
+    
+    setTimeout(() => {
+        if (alertDiv.parentNode) {
+            alertDiv.remove();
+        }
+    }, 5000);
+}
+</script>
+{% endblock %}

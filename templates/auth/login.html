@@ -1,0 +1,265 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Vehicle Damage Assessment System{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8">
+        <!-- Header -->
+        <div class="text-center">
+            <div class="mx-auto h-16 w-16 bg-gradient-to-br from-primary-500 to-primary-600 rounded-2xl flex items-center justify-center mb-6">
+                <i class="fas fa-sign-in-alt text-2xl text-white"></i>
+            </div>
+            <h2 class="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h2>
+            <p class="text-gray-600">Sign in to your account to continue</p>
+        </div>
+        
+        <!-- Login Form -->
+        <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+            <form id="loginForm" method="POST" class="space-y-6">
+                <!-- Email Field -->
+                <div>
+                    <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">Email Address</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-envelope text-gray-400"></i>
+                        </div>
+                        <input type="email" id="email" name="email" required 
+                               class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                               placeholder="Enter your email">
+                    </div>
+                </div>
+                
+                <!-- Password Field -->
+                <div>
+                    <label for="password" class="block text-sm font-semibold text-gray-700 mb-2">Password</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-lock text-gray-400"></i>
+                        </div>
+                        <input type="password" id="password" name="password" required 
+                               class="block w-full pl-10 pr-12 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                               placeholder="Enter your password">
+                        <button type="button" id="togglePassword" 
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Remember Me -->
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <input type="checkbox" id="remember" name="remember" 
+                               class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded">
+                        <label for="remember" class="ml-2 block text-sm text-gray-700">
+                            Remember me
+                        </label>
+                    </div>
+                    <div class="text-sm">
+                        <a href="#" class="font-medium text-primary-600 hover:text-primary-500 transition-colors">
+                            Forgot password?
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Submit Button -->
+                <div>
+                    <button type="submit" 
+                            class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-semibold rounded-xl text-white bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all duration-200 transform hover:scale-105 shadow-lg">
+                        <span class="absolute left-0 inset-y-0 flex items-center pl-3">
+                            <i class="fas fa-sign-in-alt text-primary-200 group-hover:text-white transition-colors"></i>
+                        </span>
+                        Sign In
+                    </button>
+                </div>
+            </form>
+            
+            <!-- Sign Up Link -->
+            <div class="mt-6 text-center">
+                <p class="text-sm text-gray-600">
+                    Don't have an account? 
+                    <a href="{{ url_for('auth.register') }}" class="font-semibold text-primary-600 hover:text-primary-500 transition-colors">
+                        Sign up here
+                    </a>
+                </p>
+            </div>
+        </div>
+        
+        <!-- Demo Credentials -->
+        <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
+            <div class="flex items-start">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-info-circle text-blue-400"></i>
+                </div>
+                <div class="ml-3">
+                    <h3 class="text-sm font-medium text-blue-800">Demo Credentials</h3>
+                    <div class="mt-2 text-sm text-blue-700 space-y-1">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p><strong>Demo User:</strong> demo.user@example.com</p>
+                                <p><strong>Password:</strong> password123</p>
+                            </div>
+                            <button onclick="fillCredentials('demo.user@example.com', 'password123')" 
+                                    class="ml-4 px-3 py-1 bg-blue-600 text-white text-xs rounded-lg hover:bg-blue-700 transition-colors">
+                                Use
+                            </button>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p><strong>Admin User:</strong> admin@admin.com</p>
+                                <p><strong>Password:</strong> password123</p>
+                            </div>
+                            <button onclick="fillCredentials('admin@admin.com', 'password123')" 
+                                    class="ml-4 px-3 py-1 bg-blue-600 text-white text-xs rounded-lg hover:bg-blue-700 transition-colors">
+                                Use
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('loginForm');
+    const togglePassword = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('password');
+    
+    // Toggle password visibility
+    togglePassword.addEventListener('click', function() {
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        
+        const icon = this.querySelector('i');
+        icon.classList.toggle('fa-eye');
+        icon.classList.toggle('fa-eye-slash');
+    });
+    
+    // Handle form submission
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData);
+        
+        fetch('{{ url_for("auth.login") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Login response:', data); // Debug log
+            if (data.error) {
+                showAlert(data.error, 'danger');
+            } else {
+                // Show success message
+                try {
+                    showAlert(data.message, 'success');
+                } catch (e) {
+                    console.error('Error showing success alert:', e);
+                }
+                
+                // Redirect with fallback
+                setTimeout(() => {
+                    console.log('Redirecting to:', data.redirect); // Debug log
+                    try {
+                        window.location.href = data.redirect;
+                    } catch (e) {
+                        console.error('Error redirecting:', e);
+                        // Fallback redirect
+                        window.location = data.redirect;
+                    }
+                }, 500); // Reduced delay
+            }
+        })
+        .catch(error => {
+            showAlert('An error occurred. Please try again.', 'danger');
+        });
+    });
+});
+
+// Function to fill credentials when demo buttons are clicked
+function fillCredentials(email, password) {
+    document.getElementById('email').value = email;
+    document.getElementById('password').value = password;
+    
+    // Add a subtle animation to show the fields were filled
+    const emailField = document.getElementById('email');
+    const passwordField = document.getElementById('password');
+    
+    emailField.classList.add('ring-2', 'ring-green-400');
+    passwordField.classList.add('ring-2', 'ring-green-400');
+    
+    setTimeout(() => {
+        emailField.classList.remove('ring-2', 'ring-green-400');
+        passwordField.classList.remove('ring-2', 'ring-green-400');
+    }, 1000);
+}
+
+function showAlert(message, type) {
+    try {
+        console.log('Showing alert:', message, type); // Debug log
+        
+        const alertDiv = document.createElement('div');
+        
+        // Map type to Tailwind classes
+        const typeClasses = {
+            'success': 'bg-green-50 border-green-200 text-green-700',
+            'error': 'bg-red-50 border-red-200 text-red-700',
+            'danger': 'bg-red-50 border-red-200 text-red-700',
+            'warning': 'bg-yellow-50 border-yellow-200 text-yellow-700',
+            'info': 'bg-blue-50 border-blue-200 text-blue-700'
+        };
+        
+        const iconClasses = {
+            'success': 'fa-check-circle text-green-400',
+            'error': 'fa-exclamation-circle text-red-400',
+            'danger': 'fa-exclamation-circle text-red-400',
+            'warning': 'fa-exclamation-triangle text-yellow-400',
+            'info': 'fa-info-circle text-blue-400'
+        };
+        
+        alertDiv.className = `mb-4 p-4 rounded-lg shadow-sm border-l-4 ${typeClasses[type] || typeClasses['info']} animate-slide-up`;
+        alertDiv.innerHTML = `
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <i class="fas ${iconClasses[type] || iconClasses['info']} mr-2"></i>
+                    <span class="font-medium">${message}</span>
+                </div>
+                <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        `;
+        
+        // Insert at the top of the form container
+        const formContainer = document.querySelector('.bg-white.rounded-2xl');
+        if (formContainer) {
+            formContainer.insertBefore(alertDiv, formContainer.firstChild);
+        } else {
+            console.error('Form container not found for alert');
+            // Fallback: append to body
+            document.body.appendChild(alertDiv);
+        }
+        
+        setTimeout(() => {
+            if (alertDiv.parentNode) {
+                alertDiv.remove();
+            }
+        }, 5000);
+    } catch (error) {
+        console.error('Error showing alert:', error);
+        // Fallback: simple alert
+        alert(message);
+    }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,331 @@
+<!-- Nearby Repair Shops Component -->
+<div id="nearbyShopsSection" class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-8">
+    <div class="flex items-center justify-between mb-6">
+        <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+            <i class="fas fa-map-marker-alt text-primary-600 mr-2"></i>Nearby Repair Shops
+        </h3>
+        <button id="refreshLocationBtn" class="text-primary-600 hover:text-primary-700 font-medium text-sm transition-colors">
+            <i class="fas fa-sync-alt mr-1"></i>Refresh
+        </button>
+    </div>
+    
+    <!-- Location Permission Request -->
+    <div id="locationPermission" class="text-center py-8 hidden">
+        <div class="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <i class="fas fa-location-arrow text-blue-600 text-2xl"></i>
+        </div>
+        <h4 class="text-lg font-semibold text-gray-900 mb-2">Enable Location Access</h4>
+        <p class="text-gray-600 mb-6">To find nearby repair shops, we need access to your location.</p>
+        <button id="requestLocationBtn" class="bg-primary-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-primary-700 transition-colors">
+            <i class="fas fa-location-arrow mr-2"></i>Allow Location Access
+        </button>
+    </div>
+    
+    <!-- Loading State -->
+    <div id="shopsLoading" class="text-center py-8 hidden">
+        <div class="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <i class="fas fa-spinner fa-spin text-gray-400 text-2xl"></i>
+        </div>
+        <p class="text-gray-600">Finding nearby repair shops...</p>
+    </div>
+    
+    <!-- Error State -->
+    <div id="shopsError" class="text-center py-8 hidden">
+        <div class="w-16 h-16 bg-red-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <i class="fas fa-exclamation-triangle text-red-600 text-2xl"></i>
+        </div>
+        <h4 class="text-lg font-semibold text-gray-900 mb-2">Unable to Find Shops</h4>
+        <p class="text-gray-600 mb-4" id="errorMessage">There was an error finding nearby repair shops.</p>
+        <button id="retryBtn" class="bg-primary-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-primary-700 transition-colors">
+            <i class="fas fa-redo mr-2"></i>Try Again
+        </button>
+    </div>
+    
+    <!-- Shops List -->
+    <div id="shopsList" class="hidden">
+        <div class="mb-4">
+            <p class="text-sm text-gray-600">Found <span id="shopsCount">0</span> repair shops within <span id="searchRadius">10</span> km</p>
+        </div>
+        
+        <div id="shopsContainer" class="space-y-4">
+            <!-- Shops will be dynamically inserted here -->
+        </div>
+        
+        <div class="mt-6 text-center">
+            <button id="viewAllShopsBtn" class="text-primary-600 hover:text-primary-700 font-medium transition-colors">
+                View All Shops →
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Shop Card Template (Hidden) -->
+<template id="shopCardTemplate">
+    <div class="border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow">
+        <div class="flex items-start justify-between mb-3">
+            <div class="flex-1">
+                <div class="flex items-center mb-2">
+                    <h4 class="font-semibold text-gray-900 shop-name"></h4>
+                    <span class="ml-2 px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800 verified-badge hidden">
+                        Verified
+                    </span>
+                </div>
+                <p class="text-sm text-gray-600 shop-address"></p>
+            </div>
+            <div class="text-right">
+                <div class="text-sm font-semibold text-gray-900 shop-distance"></div>
+                <div class="text-xs text-gray-500">km away</div>
+            </div>
+        </div>
+        
+        <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center">
+                <div class="flex items-center shop-rating">
+                    <!-- Stars will be inserted here -->
+                </div>
+                <span class="ml-2 text-sm text-gray-600 shop-rating-value"></span>
+            </div>
+            <div class="text-sm text-gray-600 shop-price-range"></div>
+        </div>
+        
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <a href="tel:" class="text-primary-600 hover:text-primary-700 text-sm font-medium shop-phone">
+                    <i class="fas fa-phone mr-1"></i>Call
+                </a>
+                <a href="mailto:" class="text-primary-600 hover:text-primary-700 text-sm font-medium shop-email hidden">
+                    <i class="fas fa-envelope mr-1"></i>Email
+                </a>
+                <a href="" target="_blank" class="text-primary-600 hover:text-primary-700 text-sm font-medium shop-website hidden">
+                    <i class="fas fa-globe mr-1"></i>Website
+                </a>
+            </div>
+            <button class="bg-primary-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary-700 transition-colors get-directions-btn">
+                <i class="fas fa-directions mr-1"></i>Directions
+            </button>
+        </div>
+        
+        <div class="mt-3 pt-3 border-t border-gray-100">
+            <div class="text-sm text-gray-600 shop-specialties"></div>
+        </div>
+    </div>
+</template>
+
+<script>
+class NearbyShops {
+    constructor() {
+        this.userLocation = null;
+        this.shops = [];
+        this.radius = 10; // km
+        this.init();
+    }
+    
+    init() {
+        this.bindEvents();
+        this.checkLocationPermission();
+    }
+    
+    bindEvents() {
+        document.getElementById('requestLocationBtn').addEventListener('click', () => this.requestLocation());
+        document.getElementById('refreshLocationBtn').addEventListener('click', () => this.refreshLocation());
+        document.getElementById('retryBtn').addEventListener('click', () => this.requestLocation());
+    }
+    
+    checkLocationPermission() {
+        if (navigator.geolocation) {
+            // Check if we have cached location
+            const cachedLocation = localStorage.getItem('userLocation');
+            if (cachedLocation) {
+                this.userLocation = JSON.parse(cachedLocation);
+                this.loadNearbyShops();
+            } else {
+                this.showLocationPermission();
+            }
+        } else {
+            this.showError('Geolocation is not supported by this browser.');
+        }
+    }
+    
+    requestLocation() {
+        if (!navigator.geolocation) {
+            this.showError('Geolocation is not supported by this browser.');
+            return;
+        }
+        
+        this.showLoading();
+        
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                this.userLocation = {
+                    lat: position.coords.latitude,
+                    lon: position.coords.longitude
+                };
+                
+                // Cache location for 1 hour
+                localStorage.setItem('userLocation', JSON.stringify(this.userLocation));
+                localStorage.setItem('locationTimestamp', Date.now().toString());
+                
+                this.loadNearbyShops();
+            },
+            (error) => {
+                let errorMessage = 'Unable to retrieve your location. ';
+                switch(error.code) {
+                    case error.PERMISSION_DENIED:
+                        errorMessage += 'Location access denied by user.';
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        errorMessage += 'Location information is unavailable.';
+                        break;
+                    case error.TIMEOUT:
+                        errorMessage += 'Location request timed out.';
+                        break;
+                    default:
+                        errorMessage += 'An unknown error occurred.';
+                        break;
+                }
+                this.showError(errorMessage);
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 300000 // 5 minutes
+            }
+        );
+    }
+    
+    async loadNearbyShops() {
+        if (!this.userLocation) {
+            this.showError('Location not available.');
+            return;
+        }
+        
+        this.showLoading();
+        
+        try {
+            const response = await fetch(`/api/nearby-shops?lat=${this.userLocation.lat}&lon=${this.userLocation.lon}&radius=${this.radius}`);
+            const data = await response.json();
+            
+            if (data.success) {
+                this.shops = data.shops;
+                this.displayShops();
+            } else {
+                this.showError(data.error || 'Failed to load nearby shops.');
+            }
+        } catch (error) {
+            this.showError('Network error while loading shops.');
+        }
+    }
+    
+    displayShops() {
+        if (this.shops.length === 0) {
+            this.showError('No repair shops found in your area.');
+            return;
+        }
+        
+        const container = document.getElementById('shopsContainer');
+        const template = document.getElementById('shopCardTemplate');
+        
+        container.innerHTML = '';
+        
+        this.shops.forEach(shop => {
+            const card = template.content.cloneNode(true);
+            
+            // Fill in shop data
+            card.querySelector('.shop-name').textContent = shop.name;
+            card.querySelector('.shop-address').textContent = `${shop.address}, ${shop.city}`;
+            card.querySelector('.shop-distance').textContent = shop.distance.toFixed(1);
+            card.querySelector('.shop-rating-value').textContent = shop.rating.toFixed(1);
+            card.querySelector('.shop-price-range').textContent = shop.price_range || 'N/A';
+            card.querySelector('.shop-specialties').textContent = shop.specialties || 'General repair services';
+            
+            // Set up contact links
+            const phoneLink = card.querySelector('.shop-phone');
+            phoneLink.href = `tel:${shop.phone}`;
+            
+            const emailLink = card.querySelector('.shop-email');
+            if (shop.email) {
+                emailLink.href = `mailto:${shop.email}`;
+                emailLink.classList.remove('hidden');
+            }
+            
+            const websiteLink = card.querySelector('.shop-website');
+            if (shop.website) {
+                websiteLink.href = shop.website;
+                websiteLink.classList.remove('hidden');
+            }
+            
+            // Show verified badge
+            if (shop.is_verified) {
+                card.querySelector('.verified-badge').classList.remove('hidden');
+            }
+            
+            // Generate star rating
+            const ratingContainer = card.querySelector('.shop-rating');
+            for (let i = 0; i < 5; i++) {
+                const star = document.createElement('i');
+                star.className = `fas fa-star text-sm ${i < Math.floor(shop.rating) ? 'text-yellow-400' : 'text-gray-300'}`;
+                ratingContainer.appendChild(star);
+            }
+            
+            // Set up directions button
+            const directionsBtn = card.querySelector('.get-directions-btn');
+            directionsBtn.addEventListener('click', () => {
+                const url = `https://www.google.com/maps/dir/?api=1&destination=${shop.latitude},${shop.longitude}`;
+                window.open(url, '_blank');
+            });
+            
+            container.appendChild(card);
+        });
+        
+        // Update counts
+        document.getElementById('shopsCount').textContent = this.shops.length;
+        document.getElementById('searchRadius').textContent = this.radius;
+        
+        this.showShopsList();
+    }
+    
+    showLocationPermission() {
+        document.getElementById('locationPermission').classList.remove('hidden');
+        document.getElementById('shopsLoading').classList.add('hidden');
+        document.getElementById('shopsError').classList.add('hidden');
+        document.getElementById('shopsList').classList.add('hidden');
+    }
+    
+    showLoading() {
+        document.getElementById('locationPermission').classList.add('hidden');
+        document.getElementById('shopsLoading').classList.remove('hidden');
+        document.getElementById('shopsError').classList.add('hidden');
+        document.getElementById('shopsList').classList.add('hidden');
+    }
+    
+    showError(message) {
+        document.getElementById('locationPermission').classList.add('hidden');
+        document.getElementById('shopsLoading').classList.add('hidden');
+        document.getElementById('shopsError').classList.remove('hidden');
+        document.getElementById('shopsList').classList.add('hidden');
+        document.getElementById('errorMessage').textContent = message;
+    }
+    
+    showShopsList() {
+        document.getElementById('locationPermission').classList.add('hidden');
+        document.getElementById('shopsLoading').classList.add('hidden');
+        document.getElementById('shopsError').classList.add('hidden');
+        document.getElementById('shopsList').classList.remove('hidden');
+    }
+    
+    refreshLocation() {
+        // Clear cached location
+        localStorage.removeItem('userLocation');
+        localStorage.removeItem('locationTimestamp');
+        this.userLocation = null;
+        this.requestLocation();
+    }
+}
+
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    if (document.getElementById('nearbyShopsSection')) {
+        new NearbyShops();
+    }
+});
+</script>

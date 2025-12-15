@@ -1,0 +1,371 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Vehicle Damage Assessment System{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="relative bg-gradient-to-br from-primary-600 via-primary-700 to-primary-800 text-white overflow-hidden">
+    <!-- Background Pattern -->
+    <div class="absolute inset-0 bg-black opacity-10"></div>
+    <div class="absolute inset-0 opacity-5">
+        <div class="absolute inset-0" style="background-image: radial-gradient(circle at 25% 25%, rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 20px 20px;"></div>
+    </div>
+    
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div class="animate-fade-in">
+                        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6">
+                            AI-Powered Car
+                            <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-400">
+                                Damage Assessment
+                            </span>
+                        </h1>
+                        <p class="text-xl text-gray-200 mb-8 leading-relaxed">
+                            Get instant, accurate damage assessment and cost estimation for your car using cutting-edge machine learning technology. Save time and money with our specialized automotive AI system.
+                        </p>
+                <div class="flex flex-col sm:flex-row gap-4">
+                    {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('damage.upload_images') }}" class="group bg-white text-primary-600 px-8 py-4 rounded-xl font-semibold text-lg hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-xl">
+                        <i class="fas fa-camera mr-2 group-hover:animate-bounce-gentle"></i>Assess Damage
+                    </a>
+                    {% else %}
+                    <a href="{{ url_for('auth.register') }}" class="group bg-white text-primary-600 px-8 py-4 rounded-xl font-semibold text-lg hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-xl">
+                        <i class="fas fa-rocket mr-2 group-hover:animate-bounce-gentle"></i>Get Started Free
+                    </a>
+                    <a href="{{ url_for('auth.login') }}" class="group border-2 border-white text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-white hover:text-primary-600 transition-all duration-300 transform hover:scale-105">
+                        <i class="fas fa-sign-in-alt mr-2"></i>Login
+                    </a>
+                    {% endif %}
+                </div>
+                
+                <!-- Trust Indicators -->
+                <div class="mt-12 flex flex-wrap items-center gap-8 text-gray-300">
+                    <div class="flex items-center">
+                        <i class="fas fa-shield-alt text-green-400 mr-2"></i>
+                        <span class="text-sm">Secure & Private</span>
+                    </div>
+                    <div class="flex items-center">
+                        <i class="fas fa-clock text-blue-400 mr-2"></i>
+                        <span class="text-sm">Instant Results</span>
+                    </div>
+                    <div class="flex items-center">
+                        <i class="fas fa-award text-yellow-400 mr-2"></i>
+                        <span class="text-sm">95% Accuracy</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="relative animate-fade-in">
+                <div class="relative">
+                    <!-- Main Card -->
+                    <div class="bg-white/10 backdrop-blur-lg rounded-3xl p-8 border border-white/20 shadow-2xl">
+                        <div class="text-center">
+                            <div class="w-24 h-24 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                                <i class="fas fa-car-crash text-4xl text-white"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold mb-4">Smart Assessment</h3>
+                            <p class="text-gray-200 mb-6">Upload your vehicle images and get instant AI-powered damage analysis</p>
+                            
+                            <!-- Progress Bar -->
+                            <div class="w-full bg-white/20 rounded-full h-2 mb-4">
+                                <div class="bg-gradient-to-r from-green-400 to-blue-400 h-2 rounded-full w-3/4 animate-pulse"></div>
+                            </div>
+                            <p class="text-sm text-gray-300">Processing... 75% Complete</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Floating Elements -->
+                    <div class="absolute -top-4 -right-4 w-16 h-16 bg-yellow-400 rounded-full flex items-center justify-center animate-bounce-gentle">
+                        <i class="fas fa-brain text-2xl text-white"></i>
+                    </div>
+                    <div class="absolute -bottom-4 -left-4 w-12 h-12 bg-green-400 rounded-full flex items-center justify-center animate-bounce-gentle" style="animation-delay: 1s;">
+                        <i class="fas fa-check text-xl text-white"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-20 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+                    <h2 class="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
+                        Why Choose Our
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-purple-600">
+                            Car AI System?
+                        </span>
+                    </h2>
+                    <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                        Advanced AI technology specifically designed for car damage assessment. Experience the future of automotive damage evaluation.
+                    </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Feature 1 -->
+            <div class="group bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+                <div class="w-16 h-16 bg-gradient-to-br from-primary-500 to-primary-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                    <i class="fas fa-brain text-2xl text-white"></i>
+                </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-4">Car-Specific AI Detection</h3>
+                        <p class="text-gray-600 leading-relaxed">
+                            Advanced deep learning model specifically trained on car damage datasets for precise automotive damage detection and classification.
+                        </p>
+            </div>
+            
+            <!-- Feature 2 -->
+            <div class="group bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+                <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                    <i class="fas fa-calculator text-2xl text-white"></i>
+                </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-4">Automotive Cost Estimation</h3>
+                        <p class="text-gray-600 leading-relaxed">
+                            Get instant car repair cost estimates based on damage type, severity, and current automotive market rates with 95% accuracy.
+                        </p>
+            </div>
+            
+            <!-- Feature 3 -->
+            <div class="group bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+                <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                    <i class="fas fa-mobile-alt text-2xl text-white"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-4">Mobile-First Design</h3>
+                <p class="text-gray-600 leading-relaxed">
+                    Optimized for mobile devices with camera capture, drag-and-drop upload, and responsive design.
+                </p>
+            </div>
+            
+            <!-- Feature 4 -->
+            <div class="group bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+                <div class="w-16 h-16 bg-gradient-to-br from-red-500 to-red-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                    <i class="fas fa-file-pdf text-2xl text-white"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-4">Detailed Reports</h3>
+                <p class="text-gray-600 leading-relaxed">
+                    Generate comprehensive PDF reports with damage analysis, cost breakdown, and repair recommendations.
+                </p>
+            </div>
+            
+            <!-- Feature 5 -->
+            <div class="group bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+                <div class="w-16 h-16 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                    <i class="fas fa-shield-alt text-2xl text-white"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-4">Secure & Private</h3>
+                <p class="text-gray-600 leading-relaxed">
+                    Enterprise-grade security with encrypted data transmission and privacy protection for all assessments.
+                </p>
+            </div>
+            
+            <!-- Feature 6 -->
+            <div class="group bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+                <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                    <i class="fas fa-robot text-2xl text-white"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-4">AI Assistant</h3>
+                <p class="text-gray-600 leading-relaxed">
+                    Get help with image upload and damage assessment through our intelligent chatbot and guided workflow.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
+                How It
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-purple-600">
+                    Works
+                </span>
+            </h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Simple steps to get your damage assessment. Our AI-powered system makes vehicle damage evaluation effortless.
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <!-- Step 1 -->
+            <div class="text-center group">
+                <div class="relative mb-8">
+                    <div class="w-20 h-20 bg-gradient-to-br from-primary-500 to-primary-600 rounded-full flex items-center justify-center mx-auto group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                        <span class="text-2xl font-bold text-white">1</span>
+                    </div>
+                    <div class="absolute top-10 left-1/2 transform -translate-x-1/2 w-full h-0.5 bg-gradient-to-r from-primary-200 to-transparent hidden lg:block"></div>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-4">Upload Images</h3>
+                <p class="text-gray-600 leading-relaxed">
+                    Take photos or upload images of the damaged vehicle from multiple angles using our mobile-friendly interface.
+                </p>
+            </div>
+            
+            <!-- Step 2 -->
+            <div class="text-center group">
+                <div class="relative mb-8">
+                    <div class="w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                        <span class="text-2xl font-bold text-white">2</span>
+                    </div>
+                    <div class="absolute top-10 left-1/2 transform -translate-x-1/2 w-full h-0.5 bg-gradient-to-r from-green-200 to-transparent hidden lg:block"></div>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-4">AI Analysis</h3>
+                <p class="text-gray-600 leading-relaxed">
+                    Our advanced AI model analyzes the images to detect damage type, severity, and affected areas with high accuracy.
+                </p>
+            </div>
+            
+            <!-- Step 3 -->
+            <div class="text-center group">
+                <div class="relative mb-8">
+                    <div class="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                        <span class="text-2xl font-bold text-white">3</span>
+                    </div>
+                    <div class="absolute top-10 left-1/2 transform -translate-x-1/2 w-full h-0.5 bg-gradient-to-r from-blue-200 to-transparent hidden lg:block"></div>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-4">Cost Estimation</h3>
+                <p class="text-gray-600 leading-relaxed">
+                    Get instant repair cost estimates based on current market rates, damage severity, and vehicle type.
+                </p>
+            </div>
+            
+            <!-- Step 4 -->
+            <div class="text-center group">
+                <div class="relative mb-8">
+                    <div class="w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-600 rounded-full flex items-center justify-center mx-auto group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                        <span class="text-2xl font-bold text-white">4</span>
+                    </div>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-4">Get Report</h3>
+                <p class="text-gray-600 leading-relaxed">
+                    Download detailed PDF report with comprehensive analysis, recommendations, and repair cost breakdown.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Car Damage Assessment Section -->
+<section class="py-20 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
+                Specialized
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-purple-600">
+                    Car Damage Assessment
+                </span>
+            </h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Our advanced AI system is specifically trained and optimized for car damage detection, providing the most accurate results for automotive damage assessment.
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div class="group bg-white rounded-2xl p-8 text-center hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100">
+                <div class="w-20 h-20 bg-gradient-to-br from-primary-500 to-primary-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                    <i class="fas fa-car text-3xl text-white"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-4">Sedans & Hatchbacks</h3>
+                <p class="text-gray-600">Perfect for compact and mid-size cars with precise damage detection</p>
+            </div>
+            
+            <div class="group bg-white rounded-2xl p-8 text-center hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100">
+                <div class="w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                    <i class="fas fa-car-side text-3xl text-white"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-4">Hatchbacks & Coupes</h3>
+                <p class="text-gray-600">Optimized for compact and sporty cars with enhanced damage analysis</p>
+            </div>
+            
+            <div class="group bg-white rounded-2xl p-8 text-center hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100">
+                <div class="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                    <i class="fas fa-car-crash text-3xl text-white"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-4">Luxury Cars</h3>
+                <p class="text-gray-600">Specialized detection for high-end vehicles with premium parts</p>
+            </div>
+            
+            <div class="group bg-white rounded-2xl p-8 text-center hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100">
+                <div class="w-20 h-20 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                    <i class="fas fa-tools text-3xl text-white"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-4">All Car Types</h3>
+                <p class="text-gray-600">Comprehensive damage assessment for any car make and model</p>
+            </div>
+        </div>
+        
+        <!-- Car Damage Types -->
+        <div class="mt-16">
+            <h3 class="text-2xl font-bold text-gray-900 text-center mb-8">Detected Damage Types</h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-white rounded-xl p-4 text-center border border-gray-200">
+                    <i class="fas fa-scratch text-primary-600 text-2xl mb-2"></i>
+                    <p class="font-semibold text-gray-900">Scratches</p>
+                </div>
+                <div class="bg-white rounded-xl p-4 text-center border border-gray-200">
+                    <i class="fas fa-dent text-green-600 text-2xl mb-2"></i>
+                    <p class="font-semibold text-gray-900">Dents</p>
+                </div>
+                <div class="bg-white rounded-xl p-4 text-center border border-gray-200">
+                    <i class="fas fa-paint-brush text-blue-600 text-2xl mb-2"></i>
+                    <p class="font-semibold text-gray-900">Paint Damage</p>
+                </div>
+                <div class="bg-white rounded-xl p-4 text-center border border-gray-200">
+                    <i class="fas fa-cog text-purple-600 text-2xl mb-2"></i>
+                    <p class="font-semibold text-gray-900">Broken Parts</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="relative bg-gradient-to-br from-primary-600 via-primary-700 to-primary-800 text-white overflow-hidden">
+    <!-- Background Pattern -->
+    <div class="absolute inset-0 bg-black opacity-10"></div>
+    <div class="absolute inset-0 opacity-5">
+        <div class="absolute inset-0" style="background-image: radial-gradient(circle at 25% 25%, rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 20px 20px;"></div>
+    </div>
+    
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
+        <h2 class="text-4xl lg:text-5xl font-bold mb-6">
+            Ready to Get Started?
+        </h2>
+        <p class="text-xl text-gray-200 mb-12 max-w-3xl mx-auto">
+            Join thousands of users who trust our AI-powered damage assessment system. Get instant, accurate results in minutes.
+        </p>
+        
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            {% if not current_user.is_authenticated %}
+            <a href="{{ url_for('auth.register') }}" class="group bg-white text-primary-600 px-8 py-4 rounded-xl font-semibold text-lg hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-xl">
+                <i class="fas fa-rocket mr-2 group-hover:animate-bounce-gentle"></i>Create Account
+            </a>
+            <a href="{{ url_for('auth.login') }}" class="group border-2 border-white text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-white hover:text-primary-600 transition-all duration-300 transform hover:scale-105">
+                <i class="fas fa-sign-in-alt mr-2"></i>Login
+            </a>
+            {% else %}
+            <a href="{{ url_for('damage.upload_images') }}" class="group bg-white text-primary-600 px-8 py-4 rounded-xl font-semibold text-lg hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-xl">
+                <i class="fas fa-camera mr-2 group-hover:animate-bounce-gentle"></i>Start Assessment
+            </a>
+            {% endif %}
+        </div>
+        
+        <!-- Stats -->
+        <div class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+            <div class="text-center">
+                <div class="text-4xl font-bold text-yellow-400 mb-2">10K+</div>
+                <div class="text-gray-300">Assessments Completed</div>
+            </div>
+            <div class="text-center">
+                <div class="text-4xl font-bold text-green-400 mb-2">95%</div>
+                <div class="text-gray-300">Accuracy Rate</div>
+            </div>
+            <div class="text-center">
+                <div class="text-4xl font-bold text-blue-400 mb-2">2min</div>
+                <div class="text-gray-300">Average Processing Time</div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

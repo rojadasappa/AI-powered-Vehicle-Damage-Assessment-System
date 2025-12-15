@@ -1,0 +1,26 @@
+{
+  "feature_extraction": "advanced_multi_feature",
+  "classes": [
+    "01-minor",
+    "02-moderate",
+    "03-severe"
+  ],
+  "feature_count": 144,
+  "training_samples": 1106,
+  "validation_samples": 277,
+  "individual_scores": {
+    "rf": 0.5776173285198556,
+    "gb": 0.5703971119133574,
+    "svm": 0.5054151624548736,
+    "lr": 0.5270758122743683
+  },
+  "final_accuracy": 0.5703971119133574,
+  "cv_mean": 0.5633253968253967,
+  "cv_std": 0.029280548109734076,
+  "models_used": [
+    "rf",
+    "gb",
+    "svm",
+    "lr"
+  ]
+}

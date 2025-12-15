@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Print Report - {{ report.id }}</title>
+    <style>
+        @media print {
+            .no-print { display: none !important; }
+            body { margin: 0; padding: 20px; }
+            .print-header { text-align: center; margin-bottom: 30px; }
+            .print-content { font-family: Arial, sans-serif; }
+            .print-section { margin-bottom: 20px; }
+            .print-table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+            .print-table th, .print-table td { border: 1px solid #333; padding: 8px; text-align: left; }
+            .print-table th { background-color: #f5f5f5; font-weight: bold; }
+            .print-recommendations { margin-top: 20px; }
+            .print-recommendations ul { margin: 10px 0; padding-left: 20px; }
+            .print-footer { margin-top: 30px; text-align: center; font-size: 12px; color: #666; }
+        }
+        
+        @media screen {
+            body { font-family: Arial, sans-serif; margin: 20px; }
+            .print-header { text-align: center; margin-bottom: 30px; }
+            .print-content { max-width: 800px; margin: 0 auto; }
+            .print-section { margin-bottom: 20px; }
+            .print-table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+            .print-table th, .print-table td { border: 1px solid #333; padding: 8px; text-align: left; }
+            .print-table th { background-color: #f5f5f5; font-weight: bold; }
+            .print-recommendations { margin-top: 20px; }
+            .print-recommendations ul { margin: 10px 0; padding-left: 20px; }
+            .print-footer { margin-top: 30px; text-align: center; font-size: 12px; color: #666; }
+            .no-print { margin: 20px 0; }
+            .btn { padding: 10px 20px; margin: 5px; text-decoration: none; border-radius: 4px; display: inline-block; }
+            .btn-primary { background-color: #007bff; color: white; }
+            .btn-secondary { background-color: #6c757d; color: white; }
+        }
+    </style>
+</head>
+<body>
+    <div class="no-print">
+        <a href="{{ url_for('damage.results', report_id=report.id) }}" class="btn btn-secondary">← Back to Report</a>
+        <button onclick="window.print()" class="btn btn-primary">🖨️ Print Report</button>
+    </div>
+
+    <div class="print-content">
+        <div class="print-header">
+            <h1>Vehicle Damage Assessment Report</h1>
+            <p>Report ID: #{{ report.id }}</p>
+        </div>
+
+        <div class="print-section">
+            <h2>Report Details</h2>
+            <table class="print-table">
+                <tr>
+                    <th>Assessment Date:</th>
+                    <td>{{ report.created_at.strftime('%B %d, %Y at %I:%M %p') }}</td>
+                </tr>
+                <tr>
+                    <th>Vehicle Type:</th>
+                    <td>{{ report.vehicle_type }}</td>
+                </tr>
+                <tr>
+                    <th>Damage Type:</th>
+                    <td>{{ report.damage_type }}</td>
+                </tr>
+                <tr>
+                    <th>Severity:</th>
+                    <td>{{ report.severity }}</td>
+                </tr>
+                <tr>
+                    <th>Confidence Score:</th>
+                    <td>{{ "%.1f"|format(report.confidence_score * 100) }}%</td>
+                </tr>
+                <tr>
+                    <th>Status:</th>
+                    <td>{{ report.status.title() }}</td>
+                </tr>
+                <tr>
+                    <th>Estimated Cost:</th>
+                    <td>₹{{ "%.2f"|format(report.estimated_cost) }}</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="print-section">
+            <h2>Cost Breakdown</h2>
+            <table class="print-table">
+                <tr>
+                    <th>Component</th>
+                    <th>Amount (₹)</th>
+                    <th>Percentage</th>
+                </tr>
+                <tr>
+                    <td>Parts Cost</td>
+                    <td>₹{{ "%.2f"|format(report.estimated_cost * 0.6) }}</td>
+                    <td>60%</td>
+                </tr>
+                <tr>
+                    <td>Labor Cost</td>
+                    <td>₹{{ "%.2f"|format(report.estimated_cost * 0.3) }}</td>
+                    <td>30%</td>
+                </tr>
+                <tr>
+                    <td>Additional Costs</td>
+                    <td>₹{{ "%.2f"|format(report.estimated_cost * 0.1) }}</td>
+                    <td>10%</td>
+                </tr>
+                <tr style="font-weight: bold; background-color: #e9ecef;">
+                    <td>Total Estimated Cost</td>
+                    <td>₹{{ "%.2f"|format(report.estimated_cost) }}</td>
+                    <td>100%</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="print-section print-recommendations">
+            <h2>Recommendations</h2>
+            <ul>
+                {% if report.severity in ['Severe', 'Critical'] %}
+                <li>Schedule immediate inspection with a certified repair shop</li>
+                <li>Consider towing the vehicle to prevent further damage</li>
+                {% endif %}
+                
+                {% if report.estimated_cost > 1000 %}
+                <li>Contact your insurance company to file a claim</li>
+                <li>Obtain multiple repair estimates for comparison</li>
+                {% endif %}
+                
+                {% if report.damage_type in ['Structural Damage', 'Broken Part'] %}
+                <li>Avoid driving the vehicle until repairs are completed</li>
+                {% endif %}
+                
+                <li>Keep all repair documentation for insurance purposes</li>
+            </ul>
+        </div>
+
+        <div class="print-footer">
+            <p>Generated by Vehicle Damage Assessment System</p>
+            <p>Generated on: {{ report.created_at.strftime('%B %d, %Y at %I:%M %p') }}</p>
+        </div>
+    </div>
+
+    <script>
+        // Auto-trigger print dialog when page loads (for direct print requests)
+        if (window.location.search.includes('autoprint=true')) {
+            window.onload = function() {
+                setTimeout(function() {
+                    window.print();
+                }, 500);
+            };
+        }
+    </script>
+</body>
+</html>

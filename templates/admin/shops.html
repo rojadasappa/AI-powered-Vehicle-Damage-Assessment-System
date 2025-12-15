@@ -1,0 +1,306 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Repair Shops - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900 flex items-center">
+                    <div class="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center mr-3">
+                        <i class="fas fa-tools text-white text-lg"></i>
+                    </div>
+                    Manage Repair Shops
+                </h1>
+                <p class="text-gray-600 mt-2">Add, edit, and manage repair shop information</p>
+            </div>
+            <div class="mt-4 sm:mt-0">
+                <a href="{{ url_for('admin.add_shop') }}" class="group bg-gradient-to-r from-primary-600 to-primary-700 text-white px-6 py-3 rounded-xl font-semibold hover:from-primary-700 hover:to-primary-800 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center">
+                    <i class="fas fa-plus mr-2 group-hover:animate-bounce-gentle"></i>Add New Shop
+                </a>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Total Shops</p>
+                        <p class="text-2xl font-bold text-gray-900">{{ shops.total }}</p>
+                    </div>
+                    <div class="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-tools text-primary-600"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Active Shops</p>
+                        <p class="text-2xl font-bold text-green-600">{{ shops.items|selectattr('is_active')|list|length }}</p>
+                    </div>
+                    <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-check-circle text-green-600"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Verified Shops</p>
+                        <p class="text-2xl font-bold text-blue-600">{{ shops.items|selectattr('is_verified')|list|length }}</p>
+                    </div>
+                    <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-shield-check text-blue-600"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Inactive Shops</p>
+                        <p class="text-2xl font-bold text-red-600">{{ shops.items|rejectattr('is_active')|list|length }}</p>
+                    </div>
+                    <div class="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-times-circle text-red-600"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Shops List -->
+        <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900">Repair Shops</h3>
+            </div>
+            
+            {% if shops.items %}
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Shop</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rating</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for shop in shops.items %}
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 bg-primary-100 rounded-lg flex items-center justify-center mr-4">
+                                        <i class="fas fa-tools text-primary-600"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-medium text-gray-900">{{ shop.name }}</div>
+                                        <div class="text-sm text-gray-500">{{ shop.price_range or 'N/A' }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900">{{ shop.city }}, {{ shop.state }}</div>
+                                <div class="text-sm text-gray-500">{{ shop.pincode }}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm text-gray-900">{{ shop.phone }}</div>
+                                <div class="text-sm text-gray-500">{{ shop.email or 'N/A' }}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <div class="flex items-center">
+                                        {% for i in range(5) %}
+                                            <i class="fas fa-star text-{{ 'yellow-400' if i < shop.rating else 'gray-300' }} text-sm"></i>
+                                        {% endfor %}
+                                    </div>
+                                    <span class="ml-2 text-sm text-gray-600">{{ "%.1f"|format(shop.rating) }}</span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex flex-col space-y-1">
+                                    <span class="px-2 py-1 text-xs font-medium rounded-full {{ 'bg-green-100 text-green-800' if shop.is_active else 'bg-red-100 text-red-800' }}">
+                                        {{ 'Active' if shop.is_active else 'Inactive' }}
+                                    </span>
+                                    {% if shop.is_verified %}
+                                    <span class="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800">
+                                        Verified
+                                    </span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <div class="flex space-x-2">
+                                    <a href="{{ url_for('admin.edit_shop', shop_id=shop.id) }}" class="text-primary-600 hover:text-primary-900">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <button onclick="toggleShopStatus({{ shop.id }}, {{ shop.is_active|lower }})" class="text-{{ 'red' if shop.is_active else 'green' }}-600 hover:text-{{ 'red' if shop.is_active else 'green' }}-900">
+                                        <i class="fas fa-{{ 'pause' if shop.is_active else 'play' }}"></i>
+                                    </button>
+                                    <button onclick="deleteShop({{ shop.id }}, '{{ shop.name }}')" class="text-red-600 hover:text-red-900">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination -->
+            {% if shops.pages > 1 %}
+            <div class="px-6 py-4 border-t border-gray-200">
+                <div class="flex justify-center">
+                    <nav class="flex items-center space-x-2">
+                        {% if shops.has_prev %}
+                        <a href="{{ url_for('admin.shops', page=shops.prev_num) }}" class="px-3 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50">
+                            Previous
+                        </a>
+                        {% endif %}
+                        
+                        {% for page_num in shops.iter_pages() %}
+                            {% if page_num %}
+                                {% if page_num != shops.page %}
+                                <a href="{{ url_for('admin.shops', page=page_num) }}" class="px-3 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50">
+                                    {{ page_num }}
+                                </a>
+                                {% else %}
+                                <span class="px-3 py-2 bg-primary-600 text-white rounded-lg font-semibold">
+                                    {{ page_num }}
+                                </span>
+                                {% endif %}
+                            {% else %}
+                            <span class="px-3 py-2 text-gray-400">…</span>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if shops.has_next %}
+                        <a href="{{ url_for('admin.shops', page=shops.next_num) }}" class="px-3 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50">
+                            Next
+                        </a>
+                        {% endif %}
+                    </nav>
+                </div>
+            </div>
+            {% endif %}
+            
+            {% else %}
+            <div class="text-center py-12">
+                <div class="w-20 h-20 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-tools text-3xl text-gray-400"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">No repair shops found</h3>
+                <p class="text-gray-600 mb-6">Start by adding your first repair shop.</p>
+                <a href="{{ url_for('admin.add_shop') }}" class="bg-primary-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-primary-700 transition-colors inline-flex items-center">
+                    <i class="fas fa-plus mr-2"></i>Add First Shop
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function toggleShopStatus(shopId, isActive) {
+    const action = isActive ? 'deactivate' : 'activate';
+    if (confirm(`Are you sure you want to ${action} this shop?`)) {
+        fetch(`/admin/shops/${shopId}/toggle-status`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                showAlert(data.message, 'success');
+                setTimeout(() => location.reload(), 1000);
+            } else {
+                showAlert(data.error || 'An error occurred', 'danger');
+            }
+        })
+        .catch(error => {
+            showAlert('An error occurred', 'danger');
+        });
+    }
+}
+
+function deleteShop(shopId, shopName) {
+    if (confirm(`Are you sure you want to delete "${shopName}"? This action cannot be undone.`)) {
+        fetch(`/admin/shops/${shopId}/delete`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                showAlert(data.message, 'success');
+                setTimeout(() => location.reload(), 1000);
+            } else {
+                showAlert(data.error || 'An error occurred', 'danger');
+            }
+        })
+        .catch(error => {
+            showAlert('An error occurred', 'danger');
+        });
+    }
+}
+
+function showAlert(message, type) {
+    const alertDiv = document.createElement('div');
+    
+    const typeClasses = {
+        'success': 'bg-green-50 border-green-200 text-green-700',
+        'error': 'bg-red-50 border-red-200 text-red-700',
+        'danger': 'bg-red-50 border-red-200 text-red-700',
+        'warning': 'bg-yellow-50 border-yellow-200 text-yellow-700',
+        'info': 'bg-blue-50 border-blue-200 text-blue-700'
+    };
+    
+    const iconClasses = {
+        'success': 'fa-check-circle text-green-400',
+        'error': 'fa-exclamation-circle text-red-400',
+        'danger': 'fa-exclamation-circle text-red-400',
+        'warning': 'fa-exclamation-triangle text-yellow-400',
+        'info': 'fa-info-circle text-blue-400'
+    };
+    
+    alertDiv.className = `mb-4 p-4 rounded-lg shadow-sm border-l-4 ${typeClasses[type] || typeClasses['info']} animate-slide-up`;
+    alertDiv.innerHTML = `
+        <div class="flex items-center justify-between">
+            <div class="flex items-center">
+                <i class="fas ${iconClasses[type] || iconClasses['info']} mr-2"></i>
+                <span class="font-medium">${message}</span>
+            </div>
+            <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-gray-400 hover:text-gray-600">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    `;
+    
+    const container = document.querySelector('.max-w-7xl');
+    if (container) {
+        container.insertBefore(alertDiv, container.firstChild);
+    }
+    
+    setTimeout(() => {
+        if (alertDiv.parentNode) {
+            alertDiv.remove();
+        }
+    }, 5000);
+}
+</script>
+{% endblock %}

@@ -1,0 +1,239 @@
+{% extends "base.html" %}
+
+{% block title %}Damage History - Vehicle Damage Assessment System{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900 flex items-center">
+                    <div class="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center mr-3">
+                        <i class="fas fa-history text-white text-lg"></i>
+                    </div>
+                    Damage Assessment History
+                </h1>
+                <p class="text-gray-600 mt-2">View and manage all your damage assessment reports</p>
+            </div>
+            <div class="mt-4 sm:mt-0">
+                <a href="{{ url_for('damage.upload_images') }}" class="group bg-gradient-to-r from-primary-600 to-primary-700 text-white px-6 py-3 rounded-xl font-semibold hover:from-primary-700 hover:to-primary-800 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center">
+                    <i class="fas fa-plus mr-2 group-hover:animate-bounce-gentle"></i>New Assessment
+                </a>
+            </div>
+        </div>
+    
+        <!-- Filters -->
+        <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-8">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                <i class="fas fa-filter text-primary-600 mr-2"></i>Filter Reports
+            </h3>
+            <form method="GET" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div>
+                    <label for="vehicle_type" class="block text-sm font-semibold text-gray-700 mb-2">Vehicle Type</label>
+                    <select class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200" id="vehicle_type" name="vehicle_type">
+                        <option value="">All Vehicles</option>
+                        <option value="Car">Car</option>
+                        <option value="Motorcycle">Motorcycle</option>
+                        <option value="Scooter">Scooter</option>
+                        <option value="Bicycle">Bicycle</option>
+                        <option value="Bus">Bus</option>
+                        <option value="Truck">Truck</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="damage_type" class="block text-sm font-semibold text-gray-700 mb-2">Damage Type</label>
+                    <select class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200" id="damage_type" name="damage_type">
+                        <option value="">All Types</option>
+                        <option value="Dent">Dent</option>
+                        <option value="Scratch">Scratch</option>
+                        <option value="Broken Part">Broken Part</option>
+                        <option value="Crack">Crack</option>
+                        <option value="Rust">Rust</option>
+                        <option value="Paint Damage">Paint Damage</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="severity" class="block text-sm font-semibold text-gray-700 mb-2">Severity</label>
+                    <select class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200" id="severity" name="severity">
+                        <option value="">All Severities</option>
+                        <option value="Minor">Minor</option>
+                        <option value="Moderate">Moderate</option>
+                        <option value="Severe">Severe</option>
+                        <option value="Critical">Critical</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="status" class="block text-sm font-semibold text-gray-700 mb-2">Status</label>
+                    <select class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200" id="status" name="status">
+                        <option value="">All Statuses</option>
+                        <option value="pending">Pending</option>
+                        <option value="approved">Approved</option>
+                        <option value="rejected">Rejected</option>
+                        <option value="in_progress">In Progress</option>
+                    </select>
+                </div>
+                <div class="md:col-span-2 lg:col-span-4 flex flex-col sm:flex-row gap-3">
+                    <button type="submit" class="bg-primary-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-primary-700 transition-colors inline-flex items-center justify-center">
+                        <i class="fas fa-filter mr-2"></i>Apply Filters
+                    </button>
+                    <a href="{{ url_for('damage.history') }}" class="border border-gray-300 text-gray-700 px-6 py-3 rounded-xl font-semibold hover:bg-gray-50 transition-colors inline-flex items-center justify-center">
+                        <i class="fas fa-times mr-2"></i>Clear Filters
+                    </a>
+                </div>
+            </form>
+        </div>
+    
+        <!-- Reports List -->
+        {% if reports.items %}
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {% for report in reports.items %}
+            <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="flex-1">
+                        <h3 class="text-lg font-semibold text-gray-900 flex items-center mb-2">
+                            <div class="w-8 h-8 bg-primary-100 rounded-lg flex items-center justify-center mr-3">
+                                <i class="fas fa-car text-primary-600"></i>
+                            </div>
+                            {{ report.vehicle_type }} - {{ report.damage_type }}
+                        </h3>
+                        <p class="text-gray-600 text-sm flex items-center">
+                            <i class="fas fa-calendar text-gray-400 mr-2"></i>
+                            {{ report.created_at.strftime('%B %d, %Y at %I:%M %p') }}
+                        </p>
+                    </div>
+                    <div class="flex flex-col items-end space-y-2">
+                        <span class="px-3 py-1 rounded-full text-xs font-medium {{ 'bg-green-100 text-green-800' if report.severity == 'Minor' else 'bg-yellow-100 text-yellow-800' if report.severity == 'Moderate' else 'bg-red-100 text-red-800' if report.severity == 'Severe' else 'bg-gray-100 text-gray-800' }}">
+                            {{ report.severity }}
+                        </span>
+                        <span class="px-3 py-1 rounded-full text-xs font-medium {{ 'bg-gray-100 text-gray-800' if report.status == 'pending' else 'bg-green-100 text-green-800' if report.status == 'completed' or report.status == 'approved' else 'bg-red-100 text-red-800' if report.status == 'rejected' else 'bg-blue-100 text-blue-800' }}">
+                            {{ report.status.title() }}
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div class="text-center p-4 bg-green-50 rounded-xl">
+                        <div class="text-2xl font-bold text-green-600 mb-1">₹{{ "%.2f"|format(report.estimated_cost) }}</div>
+                        <p class="text-sm text-gray-600">Estimated Cost</p>
+                    </div>
+                    <div class="text-center p-4 bg-blue-50 rounded-xl">
+                        <div class="text-2xl font-bold text-blue-600 mb-1">{{ "%.1f"|format(report.confidence_score * 100) }}%</div>
+                        <p class="text-sm text-gray-600">Confidence</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+                    <div class="flex items-center text-gray-500 text-sm">
+                        <i class="fas fa-images mr-2"></i>
+                        {{ (report.image_paths|from_json|length) if report.image_paths else 0 }} image(s)
+                    </div>
+                    <div class="flex space-x-2">
+                        <a href="{{ url_for('damage.results', report_id=report.id) }}" class="bg-primary-600 text-white px-4 py-2 rounded-xl font-medium hover:bg-primary-700 transition-colors inline-flex items-center">
+                            <i class="fas fa-eye mr-2"></i>View
+                        </a>
+                        <a href="#" class="border border-green-600 text-green-600 px-4 py-2 rounded-xl font-medium hover:bg-green-50 transition-colors inline-flex items-center">
+                            <i class="fas fa-download mr-2"></i>PDF
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    
+        <!-- Pagination -->
+        {% if reports.pages > 1 %}
+        <div class="flex justify-center mt-8">
+            <nav class="flex items-center space-x-2">
+                {% if reports.has_prev %}
+                <a href="{{ url_for('damage.history', page=reports.prev_num) }}" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors">
+                    Previous
+                </a>
+                {% endif %}
+                
+                {% for page_num in reports.iter_pages() %}
+                    {% if page_num %}
+                        {% if page_num != reports.page %}
+                        <a href="{{ url_for('damage.history', page=page_num) }}" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors">
+                            {{ page_num }}
+                        </a>
+                        {% else %}
+                        <span class="px-4 py-2 bg-primary-600 text-white rounded-xl font-semibold">
+                            {{ page_num }}
+                        </span>
+                        {% endif %}
+                    {% else %}
+                    <span class="px-4 py-2 text-gray-400">…</span>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if reports.has_next %}
+                <a href="{{ url_for('damage.history', page=reports.next_num) }}" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors">
+                    Next
+                </a>
+                {% endif %}
+            </nav>
+        </div>
+        {% endif %}
+        
+        {% else %}
+        <!-- Empty State -->
+        <div class="text-center py-16">
+            <div class="w-24 h-24 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <i class="fas fa-file-alt text-4xl text-gray-400"></i>
+            </div>
+            <h3 class="text-2xl font-semibold text-gray-900 mb-4">No damage reports found</h3>
+            <p class="text-gray-600 mb-8 max-w-md mx-auto">You haven't created any damage assessments yet. Start by uploading images of your vehicle to get an instant assessment.</p>
+            <a href="{{ url_for('damage.upload_images') }}" class="bg-primary-600 text-white px-8 py-4 rounded-xl font-semibold hover:bg-primary-700 transition-colors inline-flex items-center text-lg">
+                <i class="fas fa-plus mr-2"></i>Create Your First Assessment
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add animation to cards
+    const cards = document.querySelectorAll('.card');
+    cards.forEach((card, index) => {
+        card.style.animationDelay = `${index * 0.1}s`;
+        card.classList.add('fade-in');
+    });
+    
+    // Filter form submission
+    const filterForm = document.querySelector('form[method="GET"]');
+    if (filterForm) {
+        filterForm.addEventListener('submit', function(e) {
+            // Add loading state
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Filtering...';
+            submitBtn.disabled = true;
+            
+            // Re-enable after a short delay
+            setTimeout(() => {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }, 1000);
+        });
+    }
+    
+    // Add hover effects to cards
+    const reportCards = document.querySelectorAll('.card.h-100');
+    reportCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-5px)';
+            this.style.boxShadow = '0 0.5rem 1rem rgba(0,0,0,0.15)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+            this.style.boxShadow = '0 0.125rem 0.25rem rgba(0,0,0,0.075)';
+        });
+    });
+});
+</script>
+{% endblock %}

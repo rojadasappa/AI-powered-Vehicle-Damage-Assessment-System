@@ -1,0 +1,209 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Vehicle Damage Assessment System{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900 flex items-center">
+                    <div class="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center mr-3">
+                        <i class="fas fa-tachometer-alt text-white text-lg"></i>
+                    </div>
+                    Dashboard
+                </h1>
+                <p class="text-gray-600 mt-2">Welcome back, {{ current_user.first_name or current_user.email }}!</p>
+            </div>
+            <div class="mt-4 sm:mt-0">
+                <a href="{{ url_for('damage.upload_images') }}" class="group bg-gradient-to-r from-primary-600 to-primary-700 text-white px-6 py-3 rounded-xl font-semibold hover:from-primary-700 hover:to-primary-800 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center">
+                    <i class="fas fa-plus mr-2 group-hover:animate-bounce-gentle"></i>New Assessment
+                </a>
+            </div>
+        </div>
+    
+        <!-- Statistics Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Total Reports Card -->
+            <div class="bg-gradient-to-br from-primary-500 to-primary-600 rounded-2xl p-6 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-primary-100 text-sm font-medium">Total Reports</p>
+                        <p class="text-3xl font-bold">{{ reports|length }}</p>
+                    </div>
+                    <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center">
+                        <i class="fas fa-file-alt text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Total Cost Card -->
+            <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl p-6 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-green-100 text-sm font-medium">Total Estimated Cost</p>
+                        <p class="text-3xl font-bold">₹{{ "%.2f"|format(reports|sum(attribute='estimated_cost') or 0) }}</p>
+                    </div>
+                    <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center">
+                        <i class="fas fa-rupee-sign text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pending Reports Card -->
+            <div class="bg-gradient-to-br from-yellow-500 to-orange-500 rounded-2xl p-6 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-yellow-100 text-sm font-medium">Completed Reports</p>
+                        <p class="text-3xl font-bold">{{ reports|selectattr('status', 'equalto', 'completed')|list|length }}</p>
+                    </div>
+                    <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center">
+                        <i class="fas fa-check-circle text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Approved Reports Card -->
+            <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-blue-100 text-sm font-medium">Approved Reports</p>
+                        <p class="text-3xl font-bold">{{ reports|selectattr('status', 'equalto', 'approved')|list|length }}</p>
+                    </div>
+                    <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center">
+                        <i class="fas fa-check-circle text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <!-- Recent Reports -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+                        <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                            <i class="fas fa-history text-primary-600 mr-2"></i>Recent Reports
+                        </h3>
+                        <a href="{{ url_for('damage.history') }}" class="text-primary-600 hover:text-primary-700 font-medium text-sm transition-colors">
+                            View All →
+                        </a>
+                    </div>
+                    <div class="p-6">
+                        {% if reports %}
+                            <div class="space-y-4">
+                                {% for report in reports[:5] %}
+                                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
+                                    <div class="flex items-center space-x-4">
+                                        <div class="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center">
+                                            <i class="fas fa-car text-primary-600"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-semibold text-gray-900">{{ report.vehicle_type }}</h4>
+                                            <p class="text-sm text-gray-600">{{ report.damage_type }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-4">
+                                        <div class="text-right">
+                                            <div class="text-lg font-bold text-gray-900">₹{{ "%.2f"|format(report.estimated_cost) }}</div>
+                                            <div class="text-sm text-gray-500">{{ report.created_at.strftime('%m/%d/%Y') }}</div>
+                                        </div>
+                                        <div class="flex flex-col items-end space-y-1">
+                                            <span class="px-3 py-1 rounded-full text-xs font-medium {{ 'bg-green-100 text-green-800' if report.severity == 'Minor' else 'bg-yellow-100 text-yellow-800' if report.severity == 'Moderate' else 'bg-red-100 text-red-800' if report.severity == 'Severe' else 'bg-gray-100 text-gray-800' }}">
+                                                {{ report.severity }}
+                                            </span>
+                                            <span class="px-3 py-1 rounded-full text-xs font-medium {{ 'bg-gray-100 text-gray-800' if report.status == 'pending' else 'bg-green-100 text-green-800' if report.status == 'completed' or report.status == 'approved' else 'bg-red-100 text-red-800' if report.status == 'rejected' else 'bg-blue-100 text-blue-800' }}">
+                                                {{ report.status.title() }}
+                                            </span>
+                                        </div>
+                                        <a href="{{ url_for('damage.results', report_id=report.id) }}" class="p-2 text-primary-600 hover:text-primary-700 hover:bg-primary-50 rounded-lg transition-colors">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="text-center py-12">
+                                <div class="w-20 h-20 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                                    <i class="fas fa-file-alt text-3xl text-gray-400"></i>
+                                </div>
+                                <h3 class="text-lg font-semibold text-gray-900 mb-2">No reports yet</h3>
+                                <p class="text-gray-600 mb-6">Start by creating your first damage assessment.</p>
+                                <a href="{{ url_for('damage.upload_images') }}" class="bg-primary-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-primary-700 transition-colors inline-flex items-center">
+                                    <i class="fas fa-plus mr-2"></i>Create Assessment
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sidebar -->
+            <div class="space-y-6">
+                <!-- Quick Actions -->
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                        <i class="fas fa-bolt text-yellow-500 mr-2"></i>Quick Actions
+                    </h3>
+                    <div class="space-y-3">
+                        <a href="{{ url_for('damage.upload_images') }}" class="w-full bg-primary-600 text-white px-4 py-3 rounded-xl font-medium hover:bg-primary-700 transition-colors flex items-center justify-center">
+                            <i class="fas fa-camera mr-2"></i>Upload Images
+                        </a>
+                        <a href="{{ url_for('damage.history') }}" class="w-full border border-primary-600 text-primary-600 px-4 py-3 rounded-xl font-medium hover:bg-primary-50 transition-colors flex items-center justify-center">
+                            <i class="fas fa-history mr-2"></i>View History
+                        </a>
+                        <a href="{{ url_for('auth.profile') }}" class="w-full border border-gray-300 text-gray-700 px-4 py-3 rounded-xl font-medium hover:bg-gray-50 transition-colors flex items-center justify-center">
+                            <i class="fas fa-user mr-2"></i>Edit Profile
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Damage Type Distribution -->
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                        <i class="fas fa-chart-pie text-blue-500 mr-2"></i>Damage Types
+                    </h3>
+                    {% if reports %}
+                        {% set damage_types = reports|groupby('damage_type') %}
+                        <div class="space-y-3">
+                            {% for damage_type, reports_list in damage_types %}
+                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                                <span class="font-medium text-gray-700">{{ damage_type }}</span>
+                                <span class="bg-primary-100 text-primary-800 px-3 py-1 rounded-full text-sm font-semibold">
+                                    {{ reports_list|list|length }}
+                                </span>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-8">
+                            <i class="fas fa-chart-pie text-3xl text-gray-300 mb-2"></i>
+                            <p class="text-gray-500">No data available</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add animation to cards
+    const cards = document.querySelectorAll('.bg-white.rounded-2xl');
+    cards.forEach((card, index) => {
+        card.style.animationDelay = `${index * 0.1}s`;
+        card.classList.add('animate-fade-in');
+    });
+    
+    // Auto-refresh dashboard every 30 seconds
+    setInterval(function() {
+        // You can add AJAX refresh logic here if needed
+    }, 30000);
+});
+</script>
+{% endblock %}

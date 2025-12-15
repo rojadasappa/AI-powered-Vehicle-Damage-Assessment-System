@@ -1,0 +1,397 @@
+{% extends "base.html" %}
+
+{% block title %}Profile - Vehicle Damage Assessment System{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="mb-8">
+            <div class="flex justify-between items-center">
+                <h2 class="text-3xl font-bold text-gray-900 flex items-center">
+                    <i class="fas fa-user mr-3 text-primary-600"></i>User Profile
+                </h2>
+                <a href="{{ url_for('dashboard') }}" class="inline-flex items-center px-4 py-2 border border-primary-300 rounded-md shadow-sm text-sm font-medium text-primary-700 bg-white hover:bg-primary-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                    <i class="fas fa-arrow-left mr-2"></i>Back to Dashboard
+                </a>
+            </div>
+        </div>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Profile Information -->
+            <div class="lg:col-span-2">
+                <div class="bg-white shadow rounded-lg mb-6">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h5 class="text-lg font-medium text-gray-900 flex items-center">
+                            <i class="fas fa-user-edit mr-2 text-primary-600"></i>Profile Information
+                        </h5>
+                    </div>
+                    <div class="p-6">
+                        <form id="profileForm">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label for="first_name" class="block text-sm font-medium text-gray-700 mb-2">First Name</label>
+                                    <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500" 
+                                           id="first_name" name="first_name" value="{{ user.first_name or '' }}" required>
+                                </div>
+                                <div>
+                                    <label for="last_name" class="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
+                                    <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500" 
+                                           id="last_name" name="last_name" value="{{ user.last_name or '' }}" required>
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                                <div>
+                                    <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                                    <input type="email" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-gray-50" 
+                                           id="email" name="email" value="{{ user.email }}" readonly>
+                                    <p class="mt-1 text-sm text-gray-500">Email cannot be changed</p>
+                                </div>
+                                <div>
+                                    <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                                    <input type="tel" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500" 
+                                           id="phone" name="phone" value="{{ user.phone or '' }}">
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                                <div>
+                                    <label for="created_at" class="block text-sm font-medium text-gray-700 mb-2">Member Since</label>
+                                    <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-gray-50" 
+                                           value="{{ user.created_at.strftime('%B %d, %Y') }}" readonly>
+                                </div>
+                                <div>
+                                    <label for="is_verified" class="block text-sm font-medium text-gray-700 mb-2">Account Status</label>
+                                    <div class="flex">
+                                        <span class="inline-flex items-center px-3 py-2 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
+                                            <i class="fas fa-{{ 'check-circle text-green-500' if user.is_verified else 'times-circle text-red-500' }}"></i>
+                                        </span>
+                                        <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-r-md shadow-sm bg-gray-50" 
+                                               value="{{ 'Verified' if user.is_verified else 'Not Verified' }}" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex gap-3 mt-6">
+                                <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                                    <i class="fas fa-save mr-2"></i>Update Profile
+                                </button>
+                                <button type="button" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500" onclick="resetForm()">
+                                    <i class="fas fa-undo mr-2"></i>Reset
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Password Change -->
+                <div class="bg-white shadow rounded-lg mb-6">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h5 class="text-lg font-medium text-gray-900 flex items-center">
+                            <i class="fas fa-lock mr-2 text-primary-600"></i>Change Password
+                        </h5>
+                    </div>
+                    <div class="p-6">
+                        <form id="passwordForm">
+                            <div class="mb-4">
+                                <label for="current_password" class="block text-sm font-medium text-gray-700 mb-2">Current Password</label>
+                                <input type="password" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500" 
+                                       id="current_password" name="current_password" required>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="new_password" class="block text-sm font-medium text-gray-700 mb-2">New Password</label>
+                                <input type="password" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500" 
+                                       id="new_password" name="new_password" required>
+                                <p class="mt-1 text-sm text-gray-500">Password must be at least 8 characters long</p>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="confirm_password" class="block text-sm font-medium text-gray-700 mb-2">Confirm New Password</label>
+                                <input type="password" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500" 
+                                       id="confirm_password" name="confirm_password" required>
+                            </div>
+                            
+                            <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500">
+                                <i class="fas fa-key mr-2"></i>Change Password
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Account Statistics -->
+            <div class="lg:col-span-1">
+                <div class="bg-white shadow rounded-lg mb-6">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h5 class="text-lg font-medium text-gray-900 flex items-center">
+                            <i class="fas fa-chart-bar mr-2 text-primary-600"></i>Account Statistics
+                        </h5>
+                    </div>
+                    <div class="p-6">
+                        <div class="grid grid-cols-2 gap-4 text-center">
+                            <div class="mb-4">
+                                <div class="text-2xl font-bold text-primary-600 mb-1">{{ user.damage_reports|length }}</div>
+                                <p class="text-sm text-gray-500">Total Reports</p>
+                            </div>
+                            <div class="mb-4">
+                                <div class="text-2xl font-bold text-green-600 mb-1">${{ "%.0f"|format(user.damage_reports|sum(attribute='estimated_cost') or 0) }}</div>
+                                <p class="text-sm text-gray-500">Total Estimated Cost</p>
+                            </div>
+                        </div>
+                        
+                        <hr class="my-4">
+                        
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-600">Account Status:</span>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ 'bg-green-100 text-green-800' if user.is_verified else 'bg-yellow-100 text-yellow-800' }}">
+                                    {{ 'Verified' if user.is_verified else 'Pending' }}
+                                </span>
+                            </div>
+                            
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-600">Member Since:</span>
+                                <span class="text-sm text-gray-900">{{ user.created_at.strftime('%b %Y') }}</span>
+                            </div>
+                            
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-600">Last Login:</span>
+                                <span class="text-sm text-gray-900">Today</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Quick Actions -->
+                <div class="bg-white shadow rounded-lg mb-6">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h5 class="text-lg font-medium text-gray-900 flex items-center">
+                            <i class="fas fa-bolt mr-2 text-primary-600"></i>Quick Actions
+                        </h5>
+                    </div>
+                    <div class="p-6">
+                        <div class="space-y-3">
+                            <a href="{{ url_for('damage.upload_images') }}" class="w-full inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                                <i class="fas fa-camera mr-2"></i>New Assessment
+                            </a>
+                            <a href="{{ url_for('damage.history') }}" class="w-full inline-flex items-center justify-center px-4 py-2 border border-primary-300 rounded-md shadow-sm text-sm font-medium text-primary-700 bg-white hover:bg-primary-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                                <i class="fas fa-history mr-2"></i>View History
+                            </a>
+                            <a href="#" class="w-full inline-flex items-center justify-center px-4 py-2 border border-green-300 rounded-md shadow-sm text-sm font-medium text-green-700 bg-white hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                                <i class="fas fa-chart-pie mr-2"></i>View Statistics
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Account Settings -->
+                <div class="bg-white shadow rounded-lg">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h5 class="text-lg font-medium text-gray-900 flex items-center">
+                            <i class="fas fa-cog mr-2 text-primary-600"></i>Account Settings
+                        </h5>
+                    </div>
+                    <div class="p-6">
+                        <div class="space-y-4">
+                            <div class="flex items-center">
+                                <input type="checkbox" id="emailNotifications" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded" checked>
+                                <label for="emailNotifications" class="ml-3 text-sm text-gray-700">
+                                    Email Notifications
+                                </label>
+                            </div>
+                            
+                            <div class="flex items-center">
+                                <input type="checkbox" id="smsNotifications" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded">
+                                <label for="smsNotifications" class="ml-3 text-sm text-gray-700">
+                                    SMS Notifications
+                                </label>
+                            </div>
+                            
+                            <div class="flex items-center">
+                                <input type="checkbox" id="marketingEmails" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded">
+                                <label for="marketingEmails" class="ml-3 text-sm text-gray-700">
+                                    Marketing Emails
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <hr class="my-4">
+                        
+                        <div class="w-full">
+                            <button class="w-full inline-flex items-center justify-center px-4 py-2 border border-red-300 rounded-md shadow-sm text-sm font-medium text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500" onclick="deleteAccount()">
+                                <i class="fas fa-trash mr-2"></i>Delete Account
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Profile form submission
+    const profileForm = document.getElementById('profileForm');
+    profileForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        updateProfile();
+    });
+    
+    // Password form submission
+    const passwordForm = document.getElementById('passwordForm');
+    passwordForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        changePassword();
+    });
+    
+    // Password confirmation validation
+    const newPassword = document.getElementById('new_password');
+    const confirmPassword = document.getElementById('confirm_password');
+    
+    confirmPassword.addEventListener('input', function() {
+        if (this.value !== newPassword.value) {
+            this.setCustomValidity('Passwords do not match');
+        } else {
+            this.setCustomValidity('');
+        }
+    });
+});
+
+function updateProfile() {
+    const formData = new FormData(document.getElementById('profileForm'));
+    const data = Object.fromEntries(formData);
+    
+    fetch('{{ url_for("auth.update_profile") }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.message) {
+            showAlert(data.message, 'success');
+        } else if (data.error) {
+            showAlert(data.error, 'danger');
+        }
+    })
+    .catch(error => {
+        showAlert('An error occurred. Please try again.', 'danger');
+    });
+}
+
+function changePassword() {
+    const formData = new FormData(document.getElementById('passwordForm'));
+    const data = Object.fromEntries(formData);
+    
+    // Validate passwords match
+    if (data.new_password !== data.confirm_password) {
+        showAlert('New passwords do not match', 'danger');
+        return;
+    }
+    
+    // Validate password length
+    if (data.new_password.length < 8) {
+        showAlert('Password must be at least 8 characters long', 'danger');
+        return;
+    }
+    
+    fetch('{{ url_for("auth.update_profile") }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.message) {
+            showAlert(data.message, 'success');
+            document.getElementById('passwordForm').reset();
+        } else if (data.error) {
+            showAlert(data.error, 'danger');
+        }
+    })
+    .catch(error => {
+        showAlert('An error occurred. Please try again.', 'danger');
+    });
+}
+
+function resetForm() {
+    document.getElementById('profileForm').reset();
+    // Reset to original values
+    document.getElementById('first_name').value = '{{ user.first_name or "" }}';
+    document.getElementById('last_name').value = '{{ user.last_name or "" }}';
+    document.getElementById('phone').value = '{{ user.phone or "" }}';
+}
+
+function deleteAccount() {
+    if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+        if (confirm('This will permanently delete all your data. Are you absolutely sure?')) {
+            const password = prompt('Please enter your password to confirm account deletion:');
+            if (password) {
+                fetch('{{ url_for("auth.update_profile") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({password: password})
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        showAlert(data.message, 'success');
+                        if (data.redirect) {
+                            setTimeout(() => {
+                                window.location.href = data.redirect;
+                            }, 2000);
+                        }
+                    } else if (data.error) {
+                        showAlert(data.error, 'danger');
+                    }
+                })
+                .catch(error => {
+                    showAlert('An error occurred. Please try again.', 'danger');
+                });
+            }
+        }
+    }
+}
+
+function showAlert(message, type) {
+    const alertDiv = document.createElement('div');
+    const bgColor = type === 'success' ? 'bg-green-100 border-green-400 text-green-700' : 'bg-red-100 border-red-400 text-red-700';
+    alertDiv.className = `border-l-4 p-4 mb-4 ${bgColor}`;
+    alertDiv.innerHTML = `
+        <div class="flex">
+            <div class="flex-shrink-0">
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+            </div>
+            <div class="ml-3">
+                <p class="text-sm">${message}</p>
+            </div>
+            <div class="ml-auto pl-3">
+                <div class="-mx-1.5 -my-1.5">
+                    <button type="button" class="inline-flex rounded-md p-1.5 ${type === 'success' ? 'text-green-500 hover:bg-green-100' : 'text-red-500 hover:bg-red-100'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-${type === 'success' ? 'green' : 'red'}-50 focus:ring-${type === 'success' ? 'green' : 'red'}-600" onclick="this.parentElement.parentElement.parentElement.parentElement.remove()">
+                        <span class="sr-only">Dismiss</span>
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    const container = document.querySelector('.max-w-7xl');
+    container.insertBefore(alertDiv, container.firstChild);
+    
+    setTimeout(() => {
+        alertDiv.remove();
+    }, 5000);
+}
+</script>
+{% endblock %}
