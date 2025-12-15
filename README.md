@@ -9,6 +9,17 @@ A simple and reliable AI-powered vehicle damage assessment system that uses comp
 - **Web Interface**: User-friendly Flask web application
 - **Report Generation**: Detailed damage assessment reports
 - **User Management**: User registration, login, and damage history
+- 
+## Dataset
+The car damage severity dataset is not included in this repository due to size constraints.
+
+Dataset source:
+- Kaggle: Car Damage Severity Dataset
+
+To use the dataset:
+1. Download the dataset from Kaggle
+2. Extract it into:
+   data/datasets/car_damage_severity/
 
 ## Quick Start
 
@@ -165,13 +176,18 @@ The test suite checks:
 4. Add tests for new functionality
 5. Submit a pull request
 
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## Support
 
 For support or questions, please open an issue in the repository or contact the development team.
+## 👩‍💻 Project Team
+
+This project was developed by:
+
+- **Roja H D**
+- **Shravani**
+- **Preeti**
+- **Rimjhim**
 
 ---
 
